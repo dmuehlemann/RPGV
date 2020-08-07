@@ -21,7 +21,7 @@ from datetime import datetime, timedelta
 #Load weather regime dataset
 data_folder = Path("../data/")
 # filename = data_folder / 'wr-gph-djf-daily-mean.nc'
-filename = data_folder / 'wr-gph-djf-daily-mean-c4.nc'
+filename = data_folder / 'wr-gph-djf-daily-mean-c4-xarray.nc'
 f_out = data_folder / 'results/mean_wr_country_djf_c4.csv'
 
 
@@ -102,17 +102,17 @@ for i in ninja.drop(['time'], axis=1):
 #calculate anomaly per weather region relative to mean per country
 relative_mean_wr_country = pd.DataFrame()
 
-for a in NOT RANGE range(0, max(wr)+1):
-    relative_mean_wr_country_temp2 = pd.DataFrame()
-    for i in ninja.drop(['time'], axis=1):
-        relative_mean_wr_country_temp = pd.DataFrame(mean_wr_country[a].loc[i])
-        relative_mean_wr_country_temp2 = relative_mean_wr_country_temp2.append(relative_mean_wr_country_temp)
-    relative_mean_wr_country = pd.concat([relative_mean_wr_country, relative_mean_wr_country_temp2], axis=1)
+# for a in NOT RANGE range(0, max(wr)+1):
+#     relative_mean_wr_country_temp2 = pd.DataFrame()
+#     for i in ninja.drop(['time'], axis=1):
+#         relative_mean_wr_country_temp = pd.DataFrame(mean_wr_country[a].loc[i])
+#         relative_mean_wr_country_temp2 = relative_mean_wr_country_temp2.append(relative_mean_wr_country_temp)
+#     relative_mean_wr_country = pd.concat([relative_mean_wr_country, relative_mean_wr_country_temp2], axis=1)
 
 
     
 #save results as csv
-mean_wr_country.to_csv(f_out)
+#♦mean_wr_country.to_csv(f_out)
 
 
 #########MAP data#############

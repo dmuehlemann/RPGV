@@ -1,21 +1,12 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sat May 16 13:25:51 2020
+Created on Sam Aug  1 16:57:05 2020
 
 @author: Dirk
 """
 
 """
-Compute and plot the leading EOF of geopotential height on the 500 hPa
-pressure surface over the European/Atlantic sector during winter time.
-
-This example uses the plain numpy interface.
-
-Additional requirements for this example:
-
-    * netCDF4 (http://unidata.github.io/netcdf4-python/)
-    * matplotlib (http://matplotlib.org/)
-    * cartopy (http://scitools.org.uk/cartopy/)
+Calculate daily mean of gepotential height with ERA5 Dataset and save it in new netCDF file
 
 """
 
@@ -24,25 +15,22 @@ from datetime import datetime, timedelta
 from netCDF4 import Dataset, date2num, num2date
 import numpy as np
 from pathlib import Path
-# import xarray as xr 
+#import xarray as xr 
 
 
-# Read geopotential height data using the netCDF4 module. The file contains
-# December-February averages of geopotential height at 500 hPa for the
-# European/Atlantic domain (80W-40E, 20-90N).
+# Read geopotential height data using the netCDF4 module. One files contains
+# three month (DJF, MAM, JJA, SON) of hourly geopotential height at 500 hPa for the
+# European/Atlantic domain (80W-40E, 30-90N).
 
 data_folder = Path("../data/")
-f_in = data_folder / 'gph-mam-all.nc'
-f_out = data_folder / 'gph-mam-daily-mean.nc'
+f_in = data_folder / 'gph-jja-all.nc'
+f_out = data_folder / 'gph-jja-daily-mean.nc'
 "ncin = Dataset(filename, 'r')"
 
 
 
 def dailymean(d):
-    #day = 20170102
-    #d = datetime.strptime(str(day), '%Y%m%d')
-    
-    
+    #caculate daily mean of gph for one day    
     time_needed = []
     for i in range(1, 25):
         time_needed.append(d + timedelta(hours = i))
@@ -133,19 +121,12 @@ def createdata(data):
             print('Done! Daily mean geopotential height saved in %s' % f_out)
             
 
-
-
-# data_gph = Dataset(f_in,'r')
-# var_time = data_gph['time']
-
 with Dataset(f_in) as ds_src:
     var_time = ds_src.variables['time'][:]
     dates = num2date(var_time, ds_src.variables['time'].units)
 
 
 
-#dates_avail = dates[:].strftime('%Y%m%d%H')
-#num_dates = [int(d.strftime('%Y%m%d%H')) for d in dates]
 day = [int(d.strftime('%Y%m%d')) for d in dates]
 day = list(dict.fromkeys(day))
 d = [datetime.strptime(str(d), '%Y%m%d') for d in day]
@@ -161,12 +142,6 @@ for i in d[1:]:
 
 
 
-createdata(data)
+#createdata(data)
 
-
-  
-     
-
-
-# dailymean(20170101)
 
