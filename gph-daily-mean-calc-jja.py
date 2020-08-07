@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sam Aug  1 16:57:05 2020
+Created on Sam Aug  7 11:50:05 2020
 
 @author: Dirk
 """
 
 """
-Calculate daily mean of gepotential height with ERA5 Dataset and save it in new netCDF file
+Calculate daily mean of gepotential height with ERA5 Dataset and save it in new netCDF file 
+--> special treatment for JJA
 
 """
 

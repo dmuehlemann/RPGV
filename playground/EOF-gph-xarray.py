@@ -112,7 +112,7 @@ def createdata(f_in, f_out, solver, model):
 data_folder = Path("../data/")
 #filename = data_folder / 'gph-daily-12-00.nc'
 # filename = data_folder / 'gph-monthly-mean.nc'
-filename = data_folder / 'test.nc'
+filename = data_folder / 'gph-djf-daily-mean.nc'
 f_out = data_folder / 'wr-gph-djf-daily-mean-c4-xarray.nc'
 
 
