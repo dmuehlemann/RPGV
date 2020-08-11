@@ -24,8 +24,8 @@ from pathlib import Path
 # European/Atlantic domain (80W-40E, 30-90N).
 
 data_folder = Path("../data/")
-f_in = data_folder / 'gph-djf-all.nc'
-f_out = data_folder / 'gph-djf-daily-mean.nc'
+f_in = data_folder / 'gph-jja-all.nc'
+f_out = data_folder / 'gph-jja-daily-mean.nc'
 "ncin = Dataset(filename, 'r')"
 
 
@@ -71,10 +71,10 @@ def dailymean(d):
         gph_values_set = False
         for idx in indices:
             if not gph_values_set:
-                data = var_gph[idx, :, :]
+                data = var_gph[idx, 0, :, :]
                 gph_values_set = True
             else:
-                data += var_gph[idx, :, :]
+                data += var_gph[idx, 0, :, :]
         data = np.true_divide(data, tot)
         print(tot)
         print(data[1,1])
@@ -108,7 +108,9 @@ def createdata(data):
             var.setncattr('calendar', time_cal)
          
             # Variables
-            var = ds_dest.createVariable(var_gph.name, np.double, var_gph.dimensions)
+            dim2 = var_gph.dimensions
+            dim2 = dim2[ : 1 ] + dim2[1+1 : ]
+            var = ds_dest.createVariable(var_gph.name, np.double, dim2)
             var[:, :, :] = np.einsum('abc->cab', data)
             var.setncattr('units', var_gph.units)
             var.setncattr('long_name', var_gph.long_name)
@@ -143,6 +145,6 @@ for i in d[1:]:
 
 
 
-#createdata(data)
+createdata(data)
 
 
