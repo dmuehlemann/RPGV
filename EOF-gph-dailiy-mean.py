@@ -18,10 +18,11 @@ import numpy as np
 from datetime import datetime
 from eofs.xarray import Eof
 from pathlib import Path
-# import pandas as pd
+import pandas as pd
 import seaborn as sns
 from sklearn.cluster import KMeans
 import xarray as xr 
+import matplotlib as mpl
 
 
 
@@ -78,8 +79,9 @@ def createdata(f_in, f_out, solver, model):
             # Variables
             var = ds_dest.createVariable(var_gph.name, np.double, var_gph.dimensions)
             var[:, :, :] = ds_src.variables['z'][:,:,:]
-            var.setncattr('units', var_gph.units)
-            var.setncattr('long_name', var_gph.long_name)
+            var.setncattr('units', 'm**2 s**-2')
+            var.setncattr('long_name', "Geopotential")
+
      
             # Attributes
             ds_dest.setncattr('Conventions', 'CF-1.6')
@@ -105,67 +107,99 @@ def createdata(f_in, f_out, solver, model):
             print('Done! Data saved in %s' % f_out)
 
 
+######################Plot like Jan##############
+def plot(solver):
+    N = 5
+    #eofs = solver.eofs(neofs=N)
+    eofs = solver.eofsAsCovariance(neofs=N)
+    pcs = solver.pcs(npcs=N)
+    variance_fraction = solver.varianceFraction()
+
+    cmap = mpl.cm.get_cmap("RdBu_r")
+    plt.close("all")
+    f, ax = plt.subplots(
+        ncols=N,
+        nrows=2,
+        subplot_kw={"projection": ccrs.Orthographic(central_longitude=-20, central_latitude=60)},
+        figsize=(12, 5),
+    )
+    cbar_ax = f.add_axes([0.3, 0.1, 0.4, 0.02])
+    for i in range(5):
+ 
+        if i != 0:
+            #vmax = np.round(eofs.max())
+            #vmin = np.round(eofs.min())
+            title=str(np.round(variance_fraction.sel({"mode": i}).values * 100, 1)) + "% variance "
+    
+            ax[0, i].coastlines()
+            ax[0, i].set_global()
+            eofs[i].plot.contourf(ax=ax[0, i], cmap=cmap,
+                                     transform=ccrs.PlateCarree(), add_colorbar=False)
+            ax[0, i].set_title(title, fontsize=16)
+        else:
+            #vmax = np.round(eofs.max())
+            #vmin = np.round(eofs.min())
+            title=str(np.round(variance_fraction.sel({"mode": i}).values * 100, 1)) + "% variance "
+    
+            ax[0, i].coastlines()
+            ax[0, i].set_global()
+            eofs[i].plot.contourf(ax=ax[0, i], cmap=cmap,
+                                     transform=ccrs.PlateCarree(), add_colorbar=True, cbar_kwargs={"orientation": "horizontal"}, cbar_ax=cbar_ax)
+            ax[0, i].set_title(title, fontsize=16)
+
+        ax[1, i] = plt.subplot(2, N, N + 1 + i)  # override the GeoAxes object
+        pc = pcs.sel({"mode": i}, drop=True)
+        pc = pd.Series(data=pc.values, index=pc.time.values)
+        pc.plot(ax=ax[1, i])
+        pc.rolling(window=5, center=True).mean().plot(
+            ax=ax[1, i], ls="--", color="black", lw=2
+        )
+    plt.subplots_adjust(left=0.05, right=0.92, bottom=0.25)
+    plt.suptitle("test")
+    plt.savefig("../data/fig/test.png")
+    #     base_path
+    #     + plot_path
+    #     + panel_name
+    #     + "/solarpower_eofs_"
+    #     + str(int(number))
+    #     + ".png"
+    # )
+    # add mean timeseries
+    # mpl.rcParams["axes.spines.left"] = True
+    # mpl.rcParams["axes.spines.bottom"] = True
+    # f, ax = plt.subplots()
+    # all_power.mean(dim=["lat", "lon", "number"]).PV.plot(ax=ax)
+    # ax.set_title(
+    #     "PV Generation (mean over Europe, " + time_scale + " y, ensemble)"
+    # )
+    # plt.tight_layout()
+    # plt.savefig(base_path + plot_path + panel_name + "/mean_timeseries.png")
+
+
+
+
+
 
 
 ######################Dataset#################
 data_folder = Path("../data/")
-filename = data_folder / 'gph-daily-mean.nc'
-f_out = data_folder / 'wr-gph-daily-mean-c4.nc'
+filename = data_folder / 'z_all_ano.nc'
+f_out = data_folder / 'wr_z_all_ano_c4.nc'
 
-
-
-z_all = xr.open_dataset(filename)['z']
-z_djf =z_all.sel(time=z_all['time.season']=='DJF')
-z_mam =z_all.sel(time=z_all['time.season']=='MAM')
-z_jja =z_all.sel(time=z_all['time.season']=='JJA')
-z_son =z_all.sel(time=z_all['time.season']=='SON')
-
-
-
-
+z_all_ano = xr.open_dataset(filename)['z']
 
 
 ######################EOF analysis######################
-# Compute anomalies by removing the time-mean.
-z_djf_ano = z_djf - z_djf.mean(dim='time')
-z_mam_ano = z_mam - z_mam.mean(dim='time')
-z_jja_ano = z_jja - z_jja.mean(dim='time')
-z_son_ano = z_son - z_son.mean(dim='time')
-
-
-# z_djf_ano.to_netcdf('z_djf_ano.nc')
-# z_mam_ano.to_netcdf('z_mam_ano.nc')
-# z_jja_ano.to_netcdf('z_jja_ano.nc')
-# z_son_ano.to_netcdf('z_son_ano.nc')
-
-
-
-#not good for memory usage ;-)
-#z_all_ano = xr.merge([z_djf_ano, z_mam_ano, z_jja_ano, z_son_ano])
-
-# files = ["z_djf_ano.nc", "z_jja_ano.nc", "z_mam_ano.nc", "z_son_ano.nc"]
-# z_all_ano = xr.open_mfdataset(files)
-
-
-
-
-
-# climatology = z_all.groupby("time.month").mean("time")
-# anomalies = z_all.groupby("time.month") - climatology
-
-
-
-
 
 # Create an EOF solver to do the EOF analysis. Square-root of cosine of
 # latitude weights are applied before the computation of EOFs.
-coslat = np.cos(np.deg2rad(z_all_ano['z'].coords['latitude'].values)).clip(0., 1.)
+coslat = np.cos(np.deg2rad(z_all_ano.coords['latitude'].values)).clip(0., 1.)
 wgts = np.sqrt(coslat)[..., np.newaxis]
-solver = Eof(z_all_ano['z'], weights=wgts)
+solver = Eof(z_all_ano, weights=wgts)
 
 # Retrieve the leading EOFs, expressed as the covariance between the leading PC
 # time series and the input geopotential height anomalies at each grid point.
-eof1 = solver.eofsAsCovariance(neofs=1)
+eofs = solver.eofsAsCovariance(neofs=5)
 
 # Plot the leading EOF expressed as covariance in the European/Atlantic domain.
 #clevs = np.linspace(-75, 75, 11)
@@ -173,9 +207,9 @@ proj = ccrs.Orthographic(central_longitude=-20, central_latitude=60)
 ax = plt.axes(projection=proj)
 ax.coastlines()
 ax.set_global()
-eof1[0].plot.contourf(ax=ax, cmap=plt.cm.RdBu_r,
-                         transform=ccrs.PlateCarree(), add_colorbar=False)
-ax.set_title('EOF1 expressed as covariance', fontsize=16)
+eofs[0].plot.contourf(ax=ax, cmap=plt.cm.RdBu_r,
+                         transform=ccrs.PlateCarree(), add_colorbar=False,)
+ax.set_title('EOF0 expressed as covariance', fontsize=16)
 plt.show()
 
 
@@ -197,6 +231,6 @@ plt.ylabel('PCA 2')
 
 #### Create Dataset############
 
-#createdata(filename, f_out, solver, model)
+createdata(filename, f_out, solver, model)
 
 
