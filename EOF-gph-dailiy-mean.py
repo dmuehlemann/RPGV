@@ -51,62 +51,6 @@ def elbow(pcs):
 
 
 
-###################### create Dataset ##############
-def createdata(f_in, f_out, solver, model):
-   with Dataset(f_in) as ds_src:
-       var_gph = ds_src.variables['z']
-       var_time = ds_src.variables['time']
-       with Dataset(f_out, mode = 'w', format = 'NETCDF3_64BIT_OFFSET') as ds_dest:
-            # Dimensions
-            for name in ['latitude', 'longitude']:
-                dim_src = ds_src.dimensions[name]
-                ds_dest.createDimension(name, dim_src.size)
-                var_src = ds_src.variables[name]
-                var_dest = ds_dest.createVariable(name, var_src.datatype, (name,))
-                var_dest[:] = var_src[:]
-                var_dest.setncattr('units', var_src.units)
-                var_dest.setncattr('long_name', var_src.long_name)
-     
-            ds_dest.createDimension('time', None)
-            var = ds_dest.createVariable('time', np.int32, ('time',))
-            time_units = 'hours since 1900-01-01 00:00:00'
-            time_cal = 'gregorian'
-            var[:] = var_time[:]
-            var.setncattr('units', time_units)
-            var.setncattr('long_name', 'time')
-            var.setncattr('calendar', time_cal)
-     
-            # Variables
-            var = ds_dest.createVariable(var_gph.name, np.double, var_gph.dimensions)
-            var[:, :, :] = ds_src.variables['z'][:,:,:]
-            var.setncattr('units', 'm**2 s**-2')
-            var.setncattr('long_name', "Geopotential")
-
-     
-            # Attributes
-            ds_dest.setncattr('Conventions', 'CF-1.6')
-            ds_dest.setncattr('history', '%s %s'
-                    % (datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-                    ' '.join(time.tzname)))
-            
-            
-            #Weahter Regimes
-            dim_src = len(model.labels_)
-            ds_dest.createDimension('WR', dim_src)
-            var_src = model.labels_
-            var_dest = ds_dest.createVariable('WR', np.int32, ('WR',))
-            var_dest[:] = var_src[:]
-            var_dest.setncattr('units', 'number of weather Regime')
-            var_dest.setncattr('long_name', 'Weather regime created with EOF and k-mean clustering')
-                
-                
-                
-                
-                
-                
-            print('Done! Data saved in %s' % f_out)
-
-
 ######################Plot like Jan##############
 def plot(solver):
     N = 5
@@ -184,7 +128,7 @@ def plot(solver):
 ######################Dataset#################
 data_folder = Path("../data/")
 filename = data_folder / 'z_all_ano.nc'
-f_out = data_folder / 'wr_z_all_ano_c4.nc'
+f_out = data_folder / 'wr_time-c7.nc'
 
 z_all_ano = xr.open_dataset(filename)['z']
 
@@ -219,7 +163,7 @@ plt.show()
 elbow(solver.pcs())
 
 #z_all_org = z_all + z_all.mean(dim='time')
-model = KMeans(n_clusters=4)
+model = KMeans(n_clusters=7)
 # Fit model to samples
 model.fit(solver.pcs()[:,:15])
 #z_djf_pca_kmeans = np.concatenate([z_djf_org, pd.DataFrame(solver.pcs())], axis = 1)
@@ -229,8 +173,15 @@ plt.xlabel('PCA 1')
 plt.ylabel('PCA 2')
 
 
-#### Create Dataset############
+#### Create Dataset weathter regime / time############
 
-createdata(filename, f_out, solver, model)
+wr_time = xr.DataArray(model.labels_, dims=("time"), coords={"time": z_all_ano.time}, name='wr')
+wr_time.to_netcdf(f_out)
+#z_all_ano.expand_dims(dim='WR', axis=None)
+
+
+
+
+#createdata(filename, f_out, solver, model)
 
 
