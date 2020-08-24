@@ -138,7 +138,7 @@ d = [datetime.strptime(str(d), '%Y%m%d') for d in day]
 
 data0 = dailymean(d[0])
 data = data0[..., np.newaxis]
-for i in d[1:]:
+for i in d[1:3772]:
      datatemp = dailymean(i)
      data = np.append(data, np.atleast_3d(datatemp), axis=2)
      print(i)

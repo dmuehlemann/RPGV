@@ -6,13 +6,13 @@ Created on Tue Jun 30 14:50:44 2020
 """
 
 
-from netCDF4 import Dataset, num2date
+# from netCDF4 import Dataset, num2date
 import numpy as np
 from pathlib import Path
 #import cartopy.crs as ccrs
-#import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 import pandas as pd
-from datetime import datetime, timedelta
+# from datetime import datetime, timedelta
 import xarray as xr
 
 
@@ -20,7 +20,7 @@ import xarray as xr
 #Load weather regime dataset
 data_folder = Path("../data/")
 # filename = data_folder / 'wr-gph-djf-daily-mean.nc'
-f_in = data_folder / 'wr_time2.nc'
+f_in = data_folder / 'wr_time-c7_std.nc'
 #f_out = data_folder / 'results/mean_wr_country_c4.csv'
 
 wr_time = xr.open_dataset(f_in)
@@ -45,31 +45,22 @@ for i in range(0, len(ninja_day)):
     ninja_day[i] = int(ninja_day[i][:8])
     
 ninja_day = list(dict.fromkeys(ninja_day))
+ninja_day = np.array(ninja_day)
 
-#get ninja time index for every weather regime
-# wr_day = wr_time.where(wr_time==0, drop=True).time.dt.strftime("%Y%m%d")
-# temp = []
-
-
-# if int(wr_day[300]) == ninja_day[3306]:
-# #     print('ja')
-
-
-# for a in wr_day:
-#    temp.extend([i for i, e in enumerate(ninja_day) if e == int(a)])
    
-ninja_wr_index =[]
-
+#Find index of ninja data for all weather regimes
+ninja_wr_index = []
 for b in range(0,int(wr_time.wr.max())+1):
-#for b in range(0,2):
-    wr_day = wr_time.where(wr_time==b, drop=True).time.dt.strftime("%Y%m%d")
-    temp = []
-    for a in wr_day:
-        temp.extend([i for i, e in enumerate(ninja_day) if e == int(a)])
-    ninja_wr_index.append(temp)
 
-#all ninja days found in all weather regimes
-flattened_nina_wr_index = [y for x in ninja_wr_index for y in x]
+    wr_day = wr_time.where(wr_time==b, drop=True).time.dt.strftime("%Y%m%d")
+    temp = np.array([])
+    for a in wr_day:
+        temp = np.append(temp, np.where(ninja_day==int(a)))
+        #temp = np.where(ninja_day==int(a))
+        #temp.extend([i for i, e in enumerate(ninja_day) if e == int(a)])
+    ninja_wr_index.append(temp.tolist())
+    
+
 
 
 
@@ -85,6 +76,8 @@ for a in range(0, int(wr_time.wr.max())+1):
  
     
 #calculate mean per country
+#all ninja days found in all weather regimes
+flattened_nina_wr_index = [y for x in ninja_wr_index for y in x]
 mean_country = pd.DataFrame()
 for i in ninja.drop(['time'], axis=1):
     mean_country_temp = pd.DataFrame([ninja[i][flattened_nina_wr_index].mean(axis=0)], index=[i], columns=['all WR'])
@@ -93,9 +86,6 @@ for i in ninja.drop(['time'], axis=1):
 
 #calculate anomaly per weather region relative to mean per country
 relative_mean_wr_country = pd.DataFrame()
-
-#np.array(mean_country['all WR']) - np.array(mean_wr_country['WR0'])
-
 for i in mean_wr_country:
     relative_mean_temp = pd.DataFrame(np.array(mean_country['all WR']) - np.array(mean_wr_country[i]), index=mean_wr_country.index, columns=[str(i)])
     relative_mean_wr_country = pd.concat([relative_mean_wr_country, relative_mean_temp], axis=1)
@@ -113,11 +103,8 @@ eu = gpd.read_file(shapefile)[['NAME_LATN', 'CNTR_CODE', 'geometry']]
 #Rename columns.
 eu.columns = ['country', 'country_code', 'geometry']
 eu.head()
-
-
 for_plotting = eu.merge(relative_mean_wr_country*100, left_on = 'country_code', right_index=True)
 for_plotting.info()
-
 f, ax = plt.subplots(
     ncols=2,
     nrows=2,
@@ -128,7 +115,7 @@ for i in range(0,2):
     for a in range(0,2):
         for_plotting.dropna().plot(ax = ax[i,a], column='WR'+str(k), cmap =    
                                         'YlGnBu',   
-                                         scheme='quantiles', k=8, legend =  
+                                         scheme='quantiles', k=6, legend =  
                                           True,);
         #add title to the map
         ax[i,a].set_title('Capacity factor per country for weather regime'+str(k)+' in winter', fontdict= 
@@ -141,6 +128,7 @@ for i in range(0,2):
         ax[i,a].set_ylim(bottom=30, top=80)
 
         k = k+1
+        print(k)
         
 
 
