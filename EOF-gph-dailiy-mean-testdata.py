@@ -1,15 +1,11 @@
-"""
 # -*- coding: utf-8 -*-
-
-Created on Fri Aug  7 14:34:13 2020
+"""
+Created on Mon Aug 24 10:23:32 2020
 
 @author: Dirk
-
-
-Compute and plot the leading EOF of geopotential height on the 500 hPa
-pressure surface over the European/Atlantic sector.
-
 """
+
+
 import cartopy.crs as ccrs
 # import time
 # from netCDF4 import Dataset
@@ -100,28 +96,7 @@ def plot(solver):
         )
     plt.subplots_adjust(left=0.05, right=0.92, bottom=0.25)
     plt.suptitle("EOF")
-    plt.savefig("../data/fig/EOF.png")
-    #     base_path
-    #     + plot_path
-    #     + panel_name
-    #     + "/solarpower_eofs_"
-    #     + str(int(number))
-    #     + ".png"
-    # )
-    # add mean timeseries
-    # mpl.rcParams["axes.spines.left"] = True
-    # mpl.rcParams["axes.spines.bottom"] = True
-    # f, ax = plt.subplots()
-    # all_power.mean(dim=["lat", "lon", "number"]).PV.plot(ax=ax)
-    # ax.set_title(
-    #     "PV Generation (mean over Europe, " + time_scale + " y, ensemble)"
-    # )
-    # plt.tight_layout()
-    # plt.savefig(base_path + plot_path + panel_name + "/mean_timeseries.png")
-
-
-
-
+    plt.savefig("../data/fig/testdata-EOF.png")
 
 
 
@@ -131,6 +106,52 @@ filename = data_folder / 'z_all_std_ano.nc'
 f_out = data_folder / 'wr_time-c7_std.nc'
 
 z_all_ano_std = xr.open_dataset(filename)['z']
+
+
+
+
+######################Create testdata######################
+z_all_ano_std = xr.open_dataset(filename)['z'][13514:13880]
+z_all_ano_std[0:40, 0:120, 0:240] = 1.1
+z_all_ano_std[0:40, 120:, 0:240] = -1.1
+z_all_ano_std[0:40, 0:120, 240:] = -0.1
+z_all_ano_std[0:40, 120:, 240:] = 0.1
+
+z_all_ano_std[200:240, 0:120, 0:240] = -0.6
+z_all_ano_std[200:240, 120:, 0:240] = 0.4
+z_all_ano_std[200:240, 0:120, 240:] = 0.6
+z_all_ano_std[200:240, 120:, 240:] = -0.4
+
+
+z_all_ano_std[100:160, 0:120, 0:240] = -0.75
+z_all_ano_std[100:160, 120:, 0:240] = 0.25
+z_all_ano_std[100:160, 0:120, 240:] = 0.75
+z_all_ano_std[100:160, 120:, 240:] = -0.25
+
+z_all_ano_std[270:330, 0:120, 0:240] = -1.5
+z_all_ano_std[270:330, 120:, 0:240] = 0.1
+z_all_ano_std[270:330, 0:120, 240:] = 1.5
+z_all_ano_std[270:330, 120:, 240:] = 0.1
+
+z_all_ano_std[340:342, 0:120, 0:240] = -0.3
+z_all_ano_std[340:342, 120:, 0:240] = 0.6
+z_all_ano_std[340:342, 0:120, 240:] = 0.3
+z_all_ano_std[340:342, 120:, 240:] = -0.6
+
+
+
+#cmap = mpl.cm.get_cmap("RdBu_r")
+plt.close("all")
+f1, ax1 = plt.subplots(
+    ncols=2,
+    nrows=1,
+    subplot_kw={"projection": ccrs.Orthographic(central_longitude=-20, central_latitude=60)},
+    figsize=(24, 10),
+)
+
+z_all_ano_std[0].plot.contourf(ax=ax1[0], transform=ccrs.PlateCarree(), add_colorbar=True)
+z_all_ano_std[101].plot.contourf(ax=ax1[1], transform=ccrs.PlateCarree(), add_colorbar=False)
+plt.show()
 
 
 ######################EOF analysis######################
@@ -145,16 +166,6 @@ solver = Eof(z_all_ano_std, weights=wgts)
 # time series and the input geopotential height anomalies at each grid point.
 eofs = solver.eofsAsCovariance(neofs=5)
 
-# Plot the leading EOF expressed as covariance in the European/Atlantic domain.
-#clevs = np.linspace(-75, 75, 11)
-# proj = ccrs.Orthographic(central_longitude=-20, central_latitude=60)
-# ax = plt.axes(projection=proj)
-# ax.coastlines()
-# ax.set_global()
-# eofs[0].plot.contourf(ax=ax, cmap=plt.cm.RdBu_r,
-#                          transform=ccrs.PlateCarree(), add_colorbar=False,)
-# ax.set_title('EOF0 expressed as covariance', fontsize=16)
-# plt.show()
 
 
 plot(solver)
@@ -164,37 +175,26 @@ plot(solver)
 ######################K_MEANS CLUSTERING#################
 elbow(solver.pcs())
 
-#z_all_org = z_all + z_all.mean(dim='time')
+
 model = KMeans(n_clusters=7)
 # Fit model to samples
 model.fit(solver.pcs()[:,:15])
-#z_djf_pca_kmeans = np.concatenate([z_djf_org, pd.DataFrame(solver.pcs())], axis = 1)
+
 #Plot clusters on the first two PCA
-# sns.scatterplot(solver.pcs()[:,0], solver.pcs()[:,1], alpha=.1, hue = model.labels_, palette="Paired")
-# plt.xlabel('PCA 1')
-# plt.ylabel('PCA 2')
+sns.scatterplot(solver.pcs()[:,1], solver.pcs()[:,2], alpha=.1, hue = model.labels_, palette="Paired")
+plt.xlabel('PCA 1')
+plt.ylabel('PCA 2')
 
 
-fig = plt.figure(figsize=(8, 6))
-ax = fig.add_subplot(111, projection='3d')
-
-xs = solver.pcs()[:,0]
-ys = solver.pcs()[:,1]
-zs = solver.pcs()[:,2]
-ax.scatter(xs, ys, zs, alpha=0.1, c=model.labels_)
-ax.set_xlabel('PC0')
-ax.set_ylabel('PC1')
-ax.set_zlabel('PC2')
-
-
-#### Create Dataset weathter regime / time############ --> ADD LAT AND LON TO PLOT MEAN OF EACH WR
+#### Create Dataset weathter regime / time############
 wr_time = xr.DataArray(model.labels_, dims=("time"), coords={"time": z_all_ano_std.time}, name='wr')
 #wr_time.to_netcdf(f_out)
-#z_all_ano.expand_dims(dim='WR', axis=None)
 
-
-
-
-#createdata(filename, f_out, solver, model)
+#print wr of testdata
+print(wr_time[0:40])
+print(wr_time[200:240])
+print(wr_time[100:160])
+print(wr_time[270:330])
+print(wr_time[340:342])
 
 

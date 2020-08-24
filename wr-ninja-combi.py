@@ -61,7 +61,10 @@ for b in range(0,int(wr_time.wr.max())+1):
     ninja_wr_index.append(temp.tolist())
     
 
-
+#Check
+for b in range(0,int(wr_time.wr.max())+1):
+    if wr_time.sel(time=slice("1985-01-01","2016-12-31")).where(wr_time==b, drop=True).count() == len(ninja_wr_index[0]):
+        print('correct number of ninja indexes for weather regime '+str(b))
 
 
 #Calculate mean per weather regime and country
@@ -75,7 +78,7 @@ for a in range(0, int(wr_time.wr.max())+1):
     mean_wr_country = pd.concat([mean_wr_country, temp2], axis=1)
  
     
-#calculate mean per country
+#calculate mean per country over all weather regimes
 #all ninja days found in all weather regimes
 flattened_nina_wr_index = [y for x in ninja_wr_index for y in x]
 mean_country = pd.DataFrame()
@@ -87,7 +90,7 @@ for i in ninja.drop(['time'], axis=1):
 #calculate anomaly per weather region relative to mean per country
 relative_mean_wr_country = pd.DataFrame()
 for i in mean_wr_country:
-    relative_mean_temp = pd.DataFrame(np.array(mean_country['all WR']) - np.array(mean_wr_country[i]), index=mean_wr_country.index, columns=[str(i)])
+    relative_mean_temp = pd.DataFrame((np.array(mean_wr_country[i])-np.array(mean_country['all WR']))/np.array(mean_country['all WR']), index=mean_wr_country.index, columns=[str(i)])
     relative_mean_wr_country = pd.concat([relative_mean_wr_country, relative_mean_temp], axis=1)
 
 
@@ -97,6 +100,7 @@ for i in mean_wr_country:
 
 #########MAP data#############
 import geopandas as gpd
+#evtl. better to work with level1 data --> at the moment its a bit a mess w--> X times repeating the same country with the same values
 shapefile = data_folder / 'map/NUTS_RG_01M_2021_4326.shp/NUTS_RG_01M_2021_4326.shp'
 #Read shapefile using Geopandas
 eu = gpd.read_file(shapefile)[['NAME_LATN', 'CNTR_CODE', 'geometry']]
@@ -106,19 +110,19 @@ eu.head()
 for_plotting = eu.merge(relative_mean_wr_country*100, left_on = 'country_code', right_index=True)
 for_plotting.info()
 f, ax = plt.subplots(
-    ncols=2,
+    ncols=4,
     nrows=2,
-    figsize=(18, 12),
+    figsize=(30, 15),
 )
 k=0        
 for i in range(0,2):
-    for a in range(0,2):
+    for a in range(0,4):
         for_plotting.dropna().plot(ax = ax[i,a], column='WR'+str(k), cmap =    
                                         'YlGnBu',   
-                                         scheme='quantiles', k=6, legend =  
+                                         scheme='quantiles', k=5, legend =  
                                           True,);
         #add title to the map
-        ax[i,a].set_title('Capacity factor per country for weather regime'+str(k)+' in winter', fontdict= 
+        ax[i,a].set_title('delta-CF for weather regime '+str(k), fontdict= 
                     {'fontsize':15})
         #remove axes
         ax[i,a].set_axis_off()
@@ -129,7 +133,7 @@ for i in range(0,2):
 
         k = k+1
         print(k)
-        
+plt.savefig('delta-cf.png')     
 
 
 
