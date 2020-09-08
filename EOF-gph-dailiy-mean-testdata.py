@@ -180,10 +180,27 @@ model = KMeans(n_clusters=7)
 # Fit model to samples
 model.fit(solver.pcs()[:,:15])
 
-#Plot clusters on the first two PCA
-sns.scatterplot(solver.pcs()[:,1], solver.pcs()[:,2], alpha=.1, hue = model.labels_, palette="Paired")
+#Plot clusters on the first two/three PCA
+sns.scatterplot(solver.pcs()[:,1], solver.pcs()[:,2], alpha=.3, hue = model.labels_, palette="Paired")
 plt.xlabel('PCA 1')
 plt.ylabel('PCA 2')
+
+
+
+fig = plt.figure(figsize=(8, 6))
+ax = fig.add_subplot(111, projection='3d')
+
+xs = solver.pcs()[:,0]
+ys = solver.pcs()[:,1]
+zs = solver.pcs()[:,2]
+ax.scatter(xs, ys, zs, alpha=0.3, c=model.labels_,)
+ax.set_xlabel('PC0')
+ax.set_ylabel('PC1')
+ax.set_zlabel('PC2')
+
+
+
+
 
 
 #### Create Dataset weathter regime / time############

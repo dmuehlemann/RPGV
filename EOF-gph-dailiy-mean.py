@@ -189,7 +189,7 @@ ax.set_zlabel('PC2')
 
 #### Create Dataset weathter regime / time############ --> ADD LAT AND LON TO PLOT MEAN OF EACH WR
 wr_time = xr.DataArray(model.labels_, dims=("time"), coords={"time": z_all_ano_std.time}, name='wr')
-#wr_time.to_netcdf(f_out)
+wr_time.to_netcdf(f_out)
 #z_all_ano.expand_dims(dim='WR', axis=None)
 
 

@@ -21,11 +21,11 @@ z_all = xr.open_dataset(filename)
 #std = z_all_ano.sel(time=z_all_ano['time.month']==1).std('time')
 
 
-climatology_mean = z_all.groupby("time.dayofyear").mean("time")
-climatology_std = z_all.groupby("time.dayofyear").std("time")
+climatology_mean = z_all.groupby("time.weekofyear").mean("time")
+climatology_std = z_all.groupby("time.weekofyear").std("time")
 stand_anomalies = xr.apply_ufunc(
     lambda x, m, s: (x - m) / s,
-    z_all.groupby("time.dayofyear"),
+    z_all.groupby("time.weekofyear"),
     climatology_mean,
     climatology_std,
 )

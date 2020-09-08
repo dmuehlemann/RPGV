@@ -21,7 +21,8 @@ import xarray as xr
 data_folder = Path("../data/")
 # filename = data_folder / 'wr-gph-djf-daily-mean.nc'
 f_in = data_folder / 'wr_time-c7_std.nc'
-#f_out = data_folder / 'results/mean_wr_country_c4.csv'
+f_out1 = data_folder / 'results/mean_wr_country_c4.csv'
+f_out2 = data_folder / 'results/relative_mean_wr_country_c4.csv'
 
 wr_time = xr.open_dataset(f_in)
 #dates = num2date(time, ncin.variables['time'].units)
@@ -95,7 +96,8 @@ for i in mean_wr_country:
 
 
 #save results as csv
-#♦mean_wr_country.to_csv(f_out)
+mean_wr_country.to_csv(f_out1)
+relative_mean_wr_country.to_csv(f_out2)
 
 
 #########MAP data#############
