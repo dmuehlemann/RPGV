@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Fri Sep  4 08:14:39 2020
+Created on Wed Sep  9 16:52:30 2020
 
 @author: Dirk
 """
@@ -26,10 +26,10 @@ filename = data_folder / 'gph-daily-mean.nc'
 z_all_std_ano = xr.open_dataset(filename_std_ano)['z']
 z_all = xr.open_dataset(filename)['z']
 
-file_wr = data_folder / 'wr_time-c7_std.nc'
+file_wr = data_folder / 'wr_time-c7_std_short.nc'
 wr = xr.open_dataset(file_wr)
 
-file_cf = data_folder / 'results/relative_mean_wr_country_c4.csv'
+file_cf = data_folder / 'results/relative_mean_wr_country_c4_short.csv'
 relative_mean_wr_country = pd.read_csv(file_cf, index_col=0)
 
 
@@ -64,8 +64,8 @@ cf_plotting = eu.merge(relative_mean_wr_country*100, left_on = 'country_code', r
 vmax_std_ano = 1.5
 vmin_std_ano = -1.5
 
-vmax_cf = 15
-vmin_cf = -15
+vmax_cf = 25
+vmin_cf = -25
 
 for i in range(0,wr.wr.max().values+1):
     mean_wr_std_ano = z_all_std_ano[np.where(wr.wr==i)[0][:]].mean(axis=0)
@@ -148,7 +148,7 @@ for i in range(0,wr.wr.max().values+1):
         
      
 #Move CF legend to rigt place
-leg = ax[1,i].get_figure().get_axes()[9]
+leg = ax[1,i].get_figure().get_axes()[10]
 leg.set_position([0.3,0.1,0.4,0.02])
 #move subplot
 pos1 = ax[1,0].get_position()
@@ -166,6 +166,6 @@ ax[1,0].set_position(pos2)
 #¶plt.subplots_adjust(left=0.05, right=0.92, bottom=0.25)
 
 plt.suptitle("Mean weather regime fields (standardized anomalies) and its country specific capacity factor deviation", fontsize=20)
-plt.savefig("../data/fig/cf_and_wr_plot.png")
+plt.savefig("../data/fig/cf_and_wr_plot_short.png")
 
 

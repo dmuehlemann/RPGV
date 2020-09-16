@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-Created on Fri Sep  4 08:14:39 2020
+Created on Wed Sep 16 11:33:56 2020
 
 @author: Dirk
 """
+
 
 import numpy as np
 from pathlib import Path
@@ -29,15 +30,19 @@ z_all = xr.open_dataset(filename)['z']
 file_wr = data_folder / 'wr_time-c7_std.nc'
 wr = xr.open_dataset(file_wr)
 
-file_cf = data_folder / 'results/relative_mean_wr_country_c4.csv'
-relative_mean_wr_country = pd.read_csv(file_cf, index_col=0)
-
-
+file_cf_DJF = data_folder / 'results/relative_mean_wr_country_c7_DJF.csv'
+relative_mean_wr_country_DJF = pd.read_csv(file_cf_DJF, index_col=0)
+file_cf_MAM = data_folder / 'results/relative_mean_wr_country_c7_MAM.csv'
+relative_mean_wr_country_MAM = pd.read_csv(file_cf_MAM, index_col=0)
+file_cf_JJA = data_folder / 'results/relative_mean_wr_country_c7_JJA.csv'
+relative_mean_wr_country_JJA = pd.read_csv(file_cf_JJA, index_col=0)
+file_cf_SON = data_folder / 'results/relative_mean_wr_country_c7_SON.csv'
+relative_mean_wr_country_SON = pd.read_csv(file_cf_SON, index_col=0)
 
 ######################Plot results#################
 
 #Rows and colums
-r = 2
+r = 5
 c = wr.wr.max().values+1
 
 #Create subplots and colorbar for wr
@@ -47,7 +52,7 @@ f, ax = plt.subplots(
     ncols=c,
     nrows=r,
     subplot_kw={"projection": ccrs.Orthographic(central_longitude=-20, central_latitude=60)},
-    figsize=(30, 10),
+    figsize=(30, 20),
 )
 cbar_ax = f.add_axes([0.3, .5, 0.4, 0.02])
 
@@ -57,9 +62,11 @@ shapefile = data_folder / 'map/NUTS_RG_01M_2021_4326.shp/NUTS_RG_01M_2021_4326.s
 eu = gpd.read_file(shapefile)[['NAME_LATN', 'CNTR_CODE', 'geometry']]
 #Rename columns.
 eu.columns = ['country', 'country_code', 'geometry']
-cf_plotting = eu.merge(relative_mean_wr_country*100, left_on = 'country_code', right_index=True)
-
-
+cf_plotting_DJF = eu.merge(relative_mean_wr_country_DJF*100, left_on = 'country_code', right_index=True)
+cf_plotting_MAM = eu.merge(relative_mean_wr_country_MAM*100, left_on = 'country_code', right_index=True)
+cf_plotting_JJA = eu.merge(relative_mean_wr_country_JJA*100, left_on = 'country_code', right_index=True)
+cf_plotting_SON = eu.merge(relative_mean_wr_country_SON*100, left_on = 'country_code', right_index=True)
+cf_plotting = [cf_plotting_DJF, cf_plotting_MAM, cf_plotting_JJA, cf_plotting_SON]
 
 vmax_std_ano = 1.5
 vmin_std_ano = -1.5
@@ -84,18 +91,19 @@ for i in range(0,wr.wr.max().values+1):
         
         
         #Plot CF
-        ax[1, i] = plt.subplot(2, c, c + 1 + i)  # override the GeoAxes object
-        cf_plotting.dropna().plot(ax = ax[1,i], column='WR'+str(i), cmap=cmap,
-                                  vmax=vmax_cf, vmin=vmin_cf,
-                                  legend=False,)
-        #add title to the map
-        ax[1,i].set_title('CF during WR'+str(i), fontdict= 
-                    {'fontsize':15})
-        #remove axes
-        ax[1,i].set_axis_off()
-        #only plot relevant part of map
-        ax[1,i].set_xlim(left=-20, right=40)
-        ax[1,i].set_ylim(bottom=30, top=80)
+        for s in range(1,len(cf_plotting)+1):
+            ax[s, i] = plt.subplot(r, c, c *s + i +1)  # override the GeoAxes object
+            cf_plotting[s-1].dropna().plot(ax = ax[s,i], column='WR'+str(i), cmap=cmap,
+                                      vmax=vmax_cf, vmin=vmin_cf,
+                                      legend=False,)
+            #add title to the map
+            ax[s,i].set_title('CF during WR'+str(i), fontdict= 
+                        {'fontsize':15})
+            #remove axes
+            ax[s,i].set_axis_off()
+            #only plot relevant part of map
+            ax[s,i].set_xlim(left=-20, right=40)
+            ax[s,i].set_ylim(bottom=30, top=80)
         
         #move subplot
         # pos1 = ax[1,i].get_position()
@@ -122,38 +130,39 @@ for i in range(0,wr.wr.max().values+1):
         
         
         #Plot CF
-        ax[1, i] = plt.subplot(2, c, c + 1 + i)  # override the GeoAxes object
-        cf_plotting.dropna().plot(ax = ax[1,i], column='WR'+str(i), cmap=cmap,
-                                  vmax=vmax_cf, vmin=vmin_cf,
-                                  legend=True, 
-                                  legend_kwds={'label': "Deviation from mean capacity factor per country in %",
-                                  'orientation': "horizontal",}
-                                                                  
-                                  )
-        #add title to the map
-        ax[1,i].set_title('CF during WR'+str(i), fontdict= 
-                    {'fontsize':15})
-        #remove axes
-        ax[1,i].set_axis_off()
-        #move legend to an empty space
-        #leg = ax[1,i].get_legend()
-        #leg.set_bbox_to_anchor((1.1, 1.0, 0.4, 0.2))
-        #ax[1,i].legend(labels="Percentage deviation from relative capacity factor", ncol=2, loc='upper center' )        
-        
-        ax[1,i].set_xlim(left=-20, right=40)
-        ax[1,i].set_ylim(bottom=30, top=80)
-        # patch_col = ax[1,i].collections[0]
-        # cb = f.colorbar(patch_col, ax=ax[1,i], shrink=0.5)
+        for s in range(1,len(cf_plotting)+1):
+            ax[s, i] = plt.subplot(r, c, c * s +i + 1)  # override the GeoAxes object
+            cf_plotting[s-1].dropna().plot(ax = ax[s,i], column='WR'+str(i), cmap=cmap,
+                                      vmax=vmax_cf, vmin=vmin_cf,
+                                      legend=True, 
+                                      legend_kwds={'label': "Deviation from mean capacity factor per country in %",
+                                      'orientation': "horizontal",}
+                                                                      
+                                      )
+            #add title to the map
+            ax[s,i].set_title('CF during WR'+str(i) + str(s), fontdict= 
+                        {'fontsize':15})
+            #remove axes
+            ax[s,i].set_axis_off()
+            #move legend to an empty space
+            #leg = ax[1,i].get_legend()
+            #leg.set_bbox_to_anchor((1.1, 1.0, 0.4, 0.2))
+            #ax[1,i].legend(labels="Percentage deviation from relative capacity factor", ncol=2, loc='upper center' )        
+            
+            ax[s,i].set_xlim(left=-20, right=40)
+            ax[s,i].set_ylim(bottom=30, top=80)
+            # patch_col = ax[1,i].collections[0]
+            # cb = f.colorbar(patch_col, ax=ax[1,i], shrink=0.5)
                
         
      
 #Move CF legend to rigt place
-leg = ax[1,i].get_figure().get_axes()[9]
-leg.set_position([0.3,0.1,0.4,0.02])
-#move subplot
-pos1 = ax[1,0].get_position()
-pos2 = [pos1.x0, ax[1,1].get_position().y0, pos1.width, pos1.height]
-ax[1,0].set_position(pos2)
+# leg = ax[1,i].get_figure().get_axes()[9]
+# leg.set_position([0.3,0.1,0.4,0.02])
+# #move subplot
+# pos1 = ax[1,0].get_position()
+# pos2 = [pos1.x0, ax[1,1].get_position().y0, pos1.width, pos1.height]
+# ax[1,0].set_position(pos2)
 
     
     #Plot monthly frequency of weather regime    
@@ -166,6 +175,6 @@ ax[1,0].set_position(pos2)
 #¶plt.subplots_adjust(left=0.05, right=0.92, bottom=0.25)
 
 plt.suptitle("Mean weather regime fields (standardized anomalies) and its country specific capacity factor deviation", fontsize=20)
-plt.savefig("../data/fig/cf_and_wr_plot.png")
+plt.savefig("../data/fig/cf_and_wr_plot_seasons.png")
 
 

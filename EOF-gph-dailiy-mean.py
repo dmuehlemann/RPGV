@@ -53,7 +53,7 @@ def elbow(pcs):
 
 ######################Plot like Jan##############
 def plot(solver):
-    N = 5
+    N = 7
     eofs = solver.eofs(neofs=N)
     #eofs = solver.eofsAsCovariance(neofs=N)
     pcs = solver.pcs(npcs=N)
@@ -100,7 +100,7 @@ def plot(solver):
         )
     plt.subplots_adjust(left=0.05, right=0.92, bottom=0.25)
     plt.suptitle("EOF")
-    plt.savefig("../data/fig/EOF.png")
+    plt.savefig("../data/fig/EOF7.png")
     #     base_path
     #     + plot_path
     #     + panel_name
@@ -143,7 +143,7 @@ solver = Eof(z_all_ano_std, weights=wgts)
 
 # Retrieve the leading EOFs, expressed as the covariance between the leading PC
 # time series and the input geopotential height anomalies at each grid point.
-eofs = solver.eofsAsCovariance(neofs=5)
+# eofs = solver.eofsAsCovariance(neofs=5)
 
 # Plot the leading EOF expressed as covariance in the European/Atlantic domain.
 #clevs = np.linspace(-75, 75, 11)
@@ -188,8 +188,8 @@ ax.set_zlabel('PC2')
 
 
 #### Create Dataset weathter regime / time############ --> ADD LAT AND LON TO PLOT MEAN OF EACH WR
-wr_time = xr.DataArray(model.labels_, dims=("time"), coords={"time": z_all_ano_std.time}, name='wr')
-wr_time.to_netcdf(f_out)
+# wr_time = xr.DataArray(model.labels_, dims=("time"), coords={"time": z_all_ano_std.time}, name='wr')
+# wr_time.to_netcdf(f_out)
 #z_all_ano.expand_dims(dim='WR', axis=None)
 
 
