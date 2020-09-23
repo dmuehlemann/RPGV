@@ -54,7 +54,7 @@ f, ax = plt.subplots(
     subplot_kw={"projection": ccrs.Orthographic(central_longitude=-20, central_latitude=60)},
     figsize=(30, 20),
 )
-cbar_ax = f.add_axes([0.3, .5, 0.4, 0.02])
+cbar_ax = f.add_axes([0.3, .93, 0.4, 0.02])
 
 #map infos for relative capacity factors per country
 #Read shapefile using Geopandas
@@ -67,6 +67,11 @@ cf_plotting_MAM = eu.merge(relative_mean_wr_country_MAM*100, left_on = 'country_
 cf_plotting_JJA = eu.merge(relative_mean_wr_country_JJA*100, left_on = 'country_code', right_index=True)
 cf_plotting_SON = eu.merge(relative_mean_wr_country_SON*100, left_on = 'country_code', right_index=True)
 cf_plotting = [cf_plotting_DJF, cf_plotting_MAM, cf_plotting_JJA, cf_plotting_SON]
+
+season = {1: 'winter', 2: 'spring', 3: 'summer', 4: 'autumn'}
+
+
+
 
 vmax_std_ano = 1.5
 vmin_std_ano = -1.5
@@ -97,7 +102,7 @@ for i in range(0,wr.wr.max().values+1):
                                       vmax=vmax_cf, vmin=vmin_cf,
                                       legend=False,)
             #add title to the map
-            ax[s,i].set_title('CF during WR'+str(i), fontdict= 
+            ax[s,i].set_title('CF during WR'+str(i)+' in '+ str(season[s]), fontdict= 
                         {'fontsize':15})
             #remove axes
             ax[s,i].set_axis_off()
@@ -131,38 +136,52 @@ for i in range(0,wr.wr.max().values+1):
         
         #Plot CF
         for s in range(1,len(cf_plotting)+1):
-            ax[s, i] = plt.subplot(r, c, c * s +i + 1)  # override the GeoAxes object
-            cf_plotting[s-1].dropna().plot(ax = ax[s,i], column='WR'+str(i), cmap=cmap,
-                                      vmax=vmax_cf, vmin=vmin_cf,
-                                      legend=True, 
-                                      legend_kwds={'label': "Deviation from mean capacity factor per country in %",
-                                      'orientation': "horizontal",}
-                                                                      
-                                      )
-            #add title to the map
-            ax[s,i].set_title('CF during WR'+str(i) + str(s), fontdict= 
-                        {'fontsize':15})
-            #remove axes
-            ax[s,i].set_axis_off()
-            #move legend to an empty space
-            #leg = ax[1,i].get_legend()
-            #leg.set_bbox_to_anchor((1.1, 1.0, 0.4, 0.2))
-            #ax[1,i].legend(labels="Percentage deviation from relative capacity factor", ncol=2, loc='upper center' )        
-            
-            ax[s,i].set_xlim(left=-20, right=40)
-            ax[s,i].set_ylim(bottom=30, top=80)
-            # patch_col = ax[1,i].collections[0]
-            # cb = f.colorbar(patch_col, ax=ax[1,i], shrink=0.5)
+            if s==len(cf_plotting):
+    
+                ax[s, i] = plt.subplot(r, c, c * s +i + 1)  # override the GeoAxes object
+                cf_plotting[s-1].dropna().plot(ax = ax[s,i], column='WR'+str(i), cmap=cmap,
+                                          vmax=vmax_cf, vmin=vmin_cf,
+                                          legend=True, 
+                                          legend_kwds={'label': "Deviation from mean capacity factor per country in %",
+                                          'orientation': "horizontal",}
+                                                                          
+                                          )
+                #add title to the map
+                ax[s,i].set_title('CF during WR'+str(i) +' in '+ str(season[s]), fontdict= 
+                            {'fontsize':15})
+                #remove axes
+                ax[s,i].set_axis_off()
+          
+                #adjust EU plot --> exclude "far away" regions :-)
+                ax[s,i].set_xlim(left=-20, right=40)
+                ax[s,i].set_ylim(bottom=30, top=80)
+           
+            else:
+                ax[s, i] = plt.subplot(r, c, c * s +i + 1)  # override the GeoAxes object
+                cf_plotting[s-1].dropna().plot(ax = ax[s,i], column='WR'+str(i), cmap=cmap,
+                                          vmax=vmax_cf, vmin=vmin_cf,
+                                          legend=False, 
+                                          )
+                #add title to the map
+                ax[s,i].set_title('CF during WR'+str(i) +' in '+ str(season[s]), fontdict= 
+                            {'fontsize':15})
+                #remove axes
+                ax[s,i].set_axis_off()
+          
+                #adjust EU plot --> exclude "far away" regions :-)
+                ax[s,i].set_xlim(left=-20, right=40)
+                ax[s,i].set_ylim(bottom=30, top=80) 
+
                
         
      
-#Move CF legend to rigt place
-# leg = ax[1,i].get_figure().get_axes()[9]
-# leg.set_position([0.3,0.1,0.4,0.02])
-# #move subplot
-# pos1 = ax[1,0].get_position()
-# pos2 = [pos1.x0, ax[1,1].get_position().y0, pos1.width, pos1.height]
-# ax[1,0].set_position(pos2)
+# Move CF legend to rigt place
+leg = ax[1,i].get_figure().get_axes()[12]
+leg.set_position([0.3,0.1,0.4,0.02])
+#move subplot
+pos1 = ax[4,0].get_position()
+pos2 = [pos1.x0, ax[4,1].get_position().y0, ax[4,1].get_position().width, ax[4,1].get_position().height]
+ax[4,0].set_position(pos2)
 
     
     #Plot monthly frequency of weather regime    

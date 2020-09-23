@@ -23,8 +23,8 @@ z_all = xr.open_dataset(filename)
 
 days_clima=14
 days_std=14
-climatology_mean = z_all.rolling(time=days_clima, center=True).mean().ffill(dim='time').bfill(dim='time')
-climatology_std = z_all.rolling(time=days_std, center=True).std().ffill(dim='time').bfill(dim='time').mean(("latitude", "longitude"))
+climatology_mean = z_all.rolling(time=days_clima, center=True).mean().ffill(dim='time').bfill(dim='time').groupby("time.dayofyear").mean("time")
+climatology_std = z_all.rolling(time=days_std, center=True).std().ffill(dim='time').bfill(dim='time').groupby("time.dayofyear").mean("time")
 
 # climatology_mean = z_all.groupby("time.month").mean("time")
 # climatology_std = z_all.groupby("time.month").std("time")
@@ -32,7 +32,7 @@ climatology_std = z_all.rolling(time=days_std, center=True).std().ffill(dim='tim
 
 stand_anomalies = xr.apply_ufunc(
     lambda x, m, s: (x - m) / s,
-    z_all,
+    z_all.groupby("time.dayofyear"),
     climatology_mean,
     climatology_std,
 )
