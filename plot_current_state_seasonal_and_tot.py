@@ -33,8 +33,11 @@ ninja = xr.open_dataset(file_ninja)
 
 
 
+###here no Brexit ;-)
+ninja = ninja.rename_vars({'GB':'UK'})
+
+
 #####CF calculations##########
-ninja.where(ninja.wr==0, drop=True)
 
 
 ninja_tot = []
@@ -114,7 +117,7 @@ for i in range(0,wr.wr.max().values+1):
         #Plot CF
         s=1
         for a in season.values():
-            #ax[s, i] = plt.subplot(r, c, c *s + i +1)  # override the GeoAxes object
+            ax[s, i] = plt.subplot(r, c, c * s + i + 1)  # override the GeoAxes object
             cf_plotting[i].dropna().plot(ax = ax[s,i], column=a, cmap=cmap,
                                       vmax=vmax_cf, vmin=vmin_cf,
                                       legend=False, 
@@ -157,9 +160,9 @@ for i in range(0,wr.wr.max().values+1):
         #Plot CF
         s = 1
         for a in season.values():
-            if a==len(season.values()):
+            if a=='tot':
     
-                #ax[s, i] = plt.subplot(r, c, c * s +i + 1)  # override the GeoAxes object
+                ax[s, i] = plt.subplot(r, c, c * s + i + 1)  # override the GeoAxes object
                 cf_plotting[i].dropna().plot(ax = ax[s,i], column=a, cmap=cmap,
                                           vmax=vmax_cf, vmin=vmin_cf,
                                           legend=True, 
@@ -179,7 +182,7 @@ for i in range(0,wr.wr.max().values+1):
                 s = s +1
            
             else:
-                #ax[s, i] = plt.subplot(r, c, c * s +i + 1)  # override the GeoAxes object
+                ax[s, i] = plt.subplot(r, c, c * s + i + 1)  # override the GeoAxes object
                 cf_plotting[i].dropna().plot(ax = ax[s,i], column=a, cmap=cmap,
                                           vmax=vmax_cf, vmin=vmin_cf,
                                           legend=False, 
@@ -199,12 +202,12 @@ for i in range(0,wr.wr.max().values+1):
         
      
 # Move CF legend to rigt place
-leg = ax[1,i].get_figure().get_axes()[42]
+leg = ax[1,i].get_figure().get_axes()[13]
 leg.set_position([0.3,0.1,0.4,0.02])
 #move subplot
-pos1 = ax[4,0].get_position()
-pos2 = [pos1.x0, ax[4,1].get_position().y0, ax[4,1].get_position().width, ax[4,1].get_position().height]
-ax[4,0].set_position(pos2)
+pos1 = ax[5,0].get_position()
+pos2 = [ax[4,0].get_position().x0, ax[5,1].get_position().y0, ax[5,1].get_position().width, ax[5,1].get_position().height]
+ax[5,0].set_position(pos2)
 
     
     #Plot monthly frequency of weather regime    
@@ -217,6 +220,6 @@ ax[4,0].set_position(pos2)
 #¶plt.subplots_adjust(left=0.05, right=0.92, bottom=0.25)
 
 plt.suptitle("Mean weather regime fields (standardized anomalies) and its country specific capacity factor deviation", fontsize=20)
-plt.savefig("../data/fig/cf_and_wr_plot_v2.png")
+plt.savefig("../data/fig/cf_and_wr_plot_v3.png")
 
 
