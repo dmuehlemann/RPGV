@@ -12,7 +12,7 @@ from pathlib import Path
 
 #calculate anomalies and save it in netCDF files --> allready done
 data_folder = Path("../data/")
-filename = data_folder / 'gph-daily-mean.nc'
+filename = data_folder / 'gph-daily-mean-lowpass_2_0-25.nc'
 
 
 
@@ -21,7 +21,7 @@ z_all = xr.open_dataset(filename)
 
 #std = z_all_ano.sel(time=z_all_ano['time.month']==1).std('time')
 
-days_clima=90
+days_clima=30
 days_std=30
 climatology_mean = z_all.rolling(time=days_clima, center=True).mean().ffill(dim='time').bfill(dim='time').groupby("time.dayofyear").mean("time")
 climatology_std = z_all.rolling(time=days_std, center=True).std().ffill(dim='time').bfill(dim='time').groupby("time.dayofyear").mean("time")
@@ -39,4 +39,4 @@ stand_anomalies = xr.apply_ufunc(
 
 #stand_anomalies.mean("location").to_dataframe()[["tmin", "tmax"]].plot()
 
-stand_anomalies.to_netcdf("../data/z_all_std_ano_grams.nc")
+stand_anomalies.to_netcdf("../data/z_all_std_ano_30days_lowpass_2_0-25.nc")

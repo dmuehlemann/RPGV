@@ -22,12 +22,12 @@ import geopandas as gpd
 
 data_folder = Path("../data/")
 
-filename_std_ano = data_folder / 'z_all_std_ano_grams_spatial.nc'
-filename = data_folder / 'gph-daily-mean.nc'
+filename_std_ano = data_folder / 'z_all_std_ano_30days_lowpass_2_0-25.nc'
+filename = data_folder / 'gph-daily-mean-lowpass_2_0-25.nc'
 z_all_std_ano = xr.open_dataset(filename_std_ano)['z']
 z_all = xr.open_dataset(filename)['z']
 
-file_wr = data_folder / 'wr_time-c7_std_grams_spatial.nc'
+file_wr = data_folder / 'wr_time-c7_std_30days_lowpass_2_0-25.nc'
 wr = xr.open_dataset(file_wr)
 
 
@@ -90,7 +90,7 @@ for i in range(0,wr.wr.max().values+1):
         
 
 
-plt.suptitle("Mean weather regime fields (standardized anomalies 90 days / 30 days grams spatial)", fontsize=20)
-plt.savefig("../data/fig/wr_plot_grams_spatial.png")
+plt.suptitle("Mean weather regime fields (standardized anomalies 30days + lowpass filter (2/0.25))", fontsize=20)
+plt.savefig("../data/fig/wr_plot_30days_lowpass_2_0-25.png")
 
 

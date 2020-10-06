@@ -12,7 +12,7 @@ from pathlib import Path
 
 #calculate anomalies and save it in netCDF files --> allready done
 data_folder = Path("../data/")
-filename = data_folder / 'gph-daily-mean.nc'
+filename = data_folder / 'gph-daily-mean-lowpass_2_0-1.nc'
 
 
 
@@ -39,4 +39,4 @@ stand_anomalies = xr.apply_ufunc(
 
 #stand_anomalies.mean("location").to_dataframe()[["tmin", "tmax"]].plot()
 
-stand_anomalies.to_netcdf("../data/z_all_std_ano_14days.nc")
+stand_anomalies.to_netcdf("../data/z_all_std_ano_14days_lowpass_2_0-1.nc")

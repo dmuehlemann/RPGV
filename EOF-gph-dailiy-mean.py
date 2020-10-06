@@ -100,7 +100,7 @@ def plot(solver):
         )
     plt.subplots_adjust(left=0.05, right=0.92, bottom=0.25)
     plt.suptitle("EOF")
-    plt.savefig("../data/fig/EOF7_grams.png")
+    plt.savefig("../data/fig/EOF7_14days_lowpass_2_0-1.png")
     #     base_path
     #     + plot_path
     #     + panel_name
@@ -122,8 +122,8 @@ def plot(solver):
 
 ######################Dataset#################
 data_folder = Path("../data/")
-filename = data_folder / 'z_all_std_ano_grams.nc'
-f_out = data_folder / 'wr_time-c7_std_grams.nc'
+filename = data_folder / 'z_all_std_ano_14days_lowpass_2_0-1.nc'
+f_out = data_folder / 'wr_time-c7_std_14days_lowpass_2_0-1.nc'
 
 z_all_ano_std = xr.open_dataset(filename)['z']
 
