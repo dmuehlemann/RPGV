@@ -25,10 +25,10 @@ data_folder = Path("../data/")
 filename_std_ano = data_folder / 'z_all_std_ano_30days_lowpass_2_0-25.nc'
 z_all_std_ano = xr.open_dataset(filename_std_ano)['z']
 
-file_wr = data_folder / 'wr_time-c7_std_14days_lowpass_2_0-25.nc'
+file_wr = data_folder / 'wr_time-c7_std_30days_lowpass_2_0-25_short.nc'
 wr = xr.open_dataset(file_wr)
 
-file_ninja = data_folder / 'ninja_and_wr_30days_lowpass_2_0-25.nc'
+file_ninja = data_folder / 'ninja_and_wr_30days_lowpass_2_0-25_short.nc'
 ninja = xr.open_dataset(file_ninja)
 
 
