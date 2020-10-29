@@ -12,7 +12,7 @@ import cartopy.crs as ccrs
 import matplotlib.pyplot as plt
 import xarray as xr
 # import calendar
-# import pandas as pd
+import pandas as pd
 import matplotlib as mpl
 import geopandas as gpd
 # from mapclassify import Quantiles, UserDefined
@@ -31,10 +31,16 @@ wr = xr.open_dataset(file_wr)
 file_ninja = data_folder / 'ninja_and_wr_30days_lowpass_2_0-1_short10.nc'
 ninja = xr.open_dataset(file_ninja)
 
+ic_file = data_folder / 'source/installed_capacities_IRENA.csv'
+
+ic = pd.read_csv(ic_file, header=0, parse_dates=[0], index_col=0, squeeze=True)
+# ic = ic.to_xarray()
+
 
 
 ###here no Brexit ;-)
 ninja = ninja.rename_vars({'GB':'UK'})
+ic = ic.rename(columns={'GB':'UK'})
 
 
 #####CF calculations##########
@@ -44,6 +50,20 @@ ninja_tot = []
 ninja_season= []
 
 ###prcentage deviation
+
+##Test if all countries are available for ic
+country_ninja =  []
+country_ic =  []
+for i in ninja:
+    country_ninja.append(i)
+for i in ic:
+    country_ic.append(i)
+
+list(set(country_ninja) - set(country_ic))    
+        
+
+
+##percentage deviation
 for i in range(0, int(wr.wr.max())+1):
     ninja_tot.append((ninja.drop('wr').where(ninja.wr==i, drop=True).mean() - ninja.drop('wr').mean())/ninja.drop('wr').mean())
     ninja_season.append((ninja.drop('wr').where(ninja.wr==i, drop=True).groupby('time.season').mean() - \
@@ -51,7 +71,7 @@ for i in range(0, int(wr.wr.max())+1):
                           ninja.drop('wr').groupby('time.season').mean()
                           )
     ninja_tot[i] = ninja_tot[i].expand_dims('CF')
-
+    
 
 ##absolut anomalie
 # for i in range(0, int(wr.wr.max())+1):
@@ -59,6 +79,15 @@ for i in range(0, int(wr.wr.max())+1):
 #     ninja_season.append((ninja.drop('wr').where(ninja.wr==i, drop=True).groupby('time.season').mean() - \
 #                           ninja.drop('wr').groupby('time.season').mean()))
 #     ninja_tot[i] = ninja_tot[i].expand_dims('CF')
+
+
+##Multiply with IC
+for i in ninja:
+    for a in ic:
+        if i==a:
+            for b in range(0, len(ninja_season)):
+                ninja_season[b][a] = ninja_season[b][a] * ic[a][-1]
+                ninja_tot[b][a] = ninja_tot[b][a] * ic[a][-1]
 
 
 
@@ -76,8 +105,8 @@ eu.columns = ['country', 'country_code', 'geometry']
 cf_plotting = []
 
 for i in range(0, int(wr.wr.max())+1):
-    cf_plotting.append(eu.merge(ninja_season[i].to_dataframe().transpose()*100, left_on = 'country_code', right_index=True))
-    temp = eu.merge(ninja_tot[i].to_dataframe().transpose()*100, left_on = 'country_code', right_index=True)
+    cf_plotting.append(eu.merge(ninja_season[i].to_dataframe().transpose(), left_on = 'country_code', right_index=True))
+    temp = eu.merge(ninja_tot[i].to_dataframe().transpose(), left_on = 'country_code', right_index=True)
     cf_plotting[i] = cf_plotting[i].assign(tot=temp[0])
 
 
@@ -104,8 +133,8 @@ cbar_ax = f.add_axes([0.3, .93, 0.4, 0.02])
 vmax_std_ano = 1.5
 vmin_std_ano = -1.5
 
-vmax_cf = 15
-vmin_cf = -15
+vmax_cf = 1000
+vmin_cf = -1000
 
 for i in range(0,wr.wr.max().values+1):
     mean_wr_std_ano = z_all_std_ano[np.where(wr.wr==i)[0][:]].mean(axis=0)
@@ -132,7 +161,7 @@ for i in range(0,wr.wr.max().values+1):
                                       legend=False, 
                                       )
             #add title to the map
-            ax[s,i].set_title('CF during WR'+str(i) + ' ' + str(a), fontdict= 
+            ax[s,i].set_title('ΔP during WR'+str(i) + ' ' + str(a), fontdict= 
                         {'fontsize':15})
             #remove axes
             ax[s,i].set_axis_off()
@@ -175,12 +204,12 @@ for i in range(0,wr.wr.max().values+1):
                 cf_plotting[i].dropna().plot(ax = ax[s,i], column=a, cmap=cmap,
                                           vmax=vmax_cf, vmin=vmin_cf,
                                           legend=True, 
-                                          legend_kwds={'label': "Deviation from mean capacity factor per country in %",
+                                          legend_kwds={'label': "Solar power generation deviation (in MW)",
                                           'orientation': "horizontal",}
                                                                           
                                           )
                 #add title to the map
-                ax[s,i].set_title('CF during WR'+str(i) +' ' + str(a), fontdict= 
+                ax[s,i].set_title('ΔP during WR'+str(i) +' ' + str(a), fontdict= 
                             {'fontsize':15})
                 #remove axes
                 ax[s,i].set_axis_off()
@@ -197,7 +226,7 @@ for i in range(0,wr.wr.max().values+1):
                                           legend=False, 
                                           )
                 #add title to the map
-                ax[s,i].set_title('CF during WR'+str(i) + ' ' + str(a), fontdict= 
+                ax[s,i].set_title('ΔP during WR'+str(i) + ' ' + str(a), fontdict= 
                             {'fontsize':15})
                 #remove axes
                 ax[s,i].set_axis_off()
@@ -228,7 +257,7 @@ ax[5,0].set_position(pos2)
 
 #¶plt.subplots_adjust(left=0.05, right=0.92, bottom=0.25)
 
-plt.suptitle("Mean weather regime fields (standardized anomalies) and its country specific capacity factor anomalie", fontsize=20)
-plt.savefig("../data/fig/cf_ano_and_wr_plot_lowpass0-1.png")
+plt.suptitle("Mean weather regime fields (standardized anomalies) and its country specific solar power generation deviation (MW)", fontsize=20)
+plt.savefig("../data/fig/power_deviation_and_wr_plot_lowpass0-1-v2.png")
 
 

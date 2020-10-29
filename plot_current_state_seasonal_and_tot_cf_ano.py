@@ -44,21 +44,21 @@ ninja_tot = []
 ninja_season= []
 
 ###prcentage deviation
-for i in range(0, int(wr.wr.max())+1):
-    ninja_tot.append((ninja.drop('wr').where(ninja.wr==i, drop=True).mean() - ninja.drop('wr').mean())/ninja.drop('wr').mean())
-    ninja_season.append((ninja.drop('wr').where(ninja.wr==i, drop=True).groupby('time.season').mean() - \
-                          ninja.drop('wr').groupby('time.season').mean()) / \
-                          ninja.drop('wr').groupby('time.season').mean()
-                          )
-    ninja_tot[i] = ninja_tot[i].expand_dims('CF')
+# for i in range(0, int(wr.wr.max())+1):
+#     ninja_tot.append((ninja.drop('wr').where(ninja.wr==i, drop=True).mean() - ninja.drop('wr').mean())/ninja.drop('wr').mean())
+#     ninja_season.append((ninja.drop('wr').where(ninja.wr==i, drop=True).groupby('time.season').mean() - \
+#                           ninja.drop('wr').groupby('time.season').mean()) / \
+#                           ninja.drop('wr').groupby('time.season').mean()
+#                           )
+#     ninja_tot[i] = ninja_tot[i].expand_dims('CF')
 
 
 ##absolut anomalie
-# for i in range(0, int(wr.wr.max())+1):
-#     ninja_tot.append((ninja.drop('wr').where(ninja.wr==i, drop=True).mean() - ninja.drop('wr').mean()))
-#     ninja_season.append((ninja.drop('wr').where(ninja.wr==i, drop=True).groupby('time.season').mean() - \
-#                           ninja.drop('wr').groupby('time.season').mean()))
-#     ninja_tot[i] = ninja_tot[i].expand_dims('CF')
+for i in range(0, int(wr.wr.max())+1):
+    ninja_tot.append((ninja.drop('wr').where(ninja.wr==i, drop=True).mean() - ninja.drop('wr').mean()))
+    ninja_season.append((ninja.drop('wr').where(ninja.wr==i, drop=True).groupby('time.season').mean() - \
+                          ninja.drop('wr').groupby('time.season').mean()))
+    ninja_tot[i] = ninja_tot[i].expand_dims('CF')
 
 
 
@@ -76,8 +76,8 @@ eu.columns = ['country', 'country_code', 'geometry']
 cf_plotting = []
 
 for i in range(0, int(wr.wr.max())+1):
-    cf_plotting.append(eu.merge(ninja_season[i].to_dataframe().transpose()*100, left_on = 'country_code', right_index=True))
-    temp = eu.merge(ninja_tot[i].to_dataframe().transpose()*100, left_on = 'country_code', right_index=True)
+    cf_plotting.append(eu.merge(ninja_season[i].to_dataframe().transpose(), left_on = 'country_code', right_index=True))
+    temp = eu.merge(ninja_tot[i].to_dataframe().transpose(), left_on = 'country_code', right_index=True)
     cf_plotting[i] = cf_plotting[i].assign(tot=temp[0])
 
 
@@ -104,8 +104,8 @@ cbar_ax = f.add_axes([0.3, .93, 0.4, 0.02])
 vmax_std_ano = 1.5
 vmin_std_ano = -1.5
 
-vmax_cf = 15
-vmin_cf = -15
+vmax_cf = 0.015
+vmin_cf = -0.015
 
 for i in range(0,wr.wr.max().values+1):
     mean_wr_std_ano = z_all_std_ano[np.where(wr.wr==i)[0][:]].mean(axis=0)
@@ -175,7 +175,7 @@ for i in range(0,wr.wr.max().values+1):
                 cf_plotting[i].dropna().plot(ax = ax[s,i], column=a, cmap=cmap,
                                           vmax=vmax_cf, vmin=vmin_cf,
                                           legend=True, 
-                                          legend_kwds={'label': "Deviation from mean capacity factor per country in %",
+                                          legend_kwds={'label': "Capacity factor anomaly",
                                           'orientation': "horizontal",}
                                                                           
                                           )

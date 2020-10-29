@@ -19,8 +19,8 @@ import xarray as xr
 
 ######################Load Datasets#################
 data_folder = Path("../data/")
-f_in = data_folder / 'wr_time-c7_std_30days_lowpass_2_0-25_short.nc'
-f_out = data_folder / 'ninja_and_wr_30days_lowpass_2_0-25_short.nc'
+f_in = data_folder / 'wr_time-c7_std_30days_lowpass_2_0-1_short10.nc'
+f_out = data_folder / 'ninja_and_wr_30days_lowpass_2_0-1_short10.nc'
 
 #Load weather regime dataset
 wr_time = xr.open_dataset(f_in)

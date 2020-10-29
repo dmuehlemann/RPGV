@@ -28,8 +28,8 @@ import matplotlib as mpl
 
 ######################Dataset#################
 data_folder = Path("../data/")
-filename = data_folder / 'z_all_std_ano_30days_lowpass_2_0-25.nc'
-f_out = data_folder / 'wr_time-c7_std_30days_lowpass_2_0-25.nc'
+filename = data_folder / 'z_all_std_ano_30days_lowpass_2_0-1.nc'
+f_out = data_folder / 'wr_time-c7_std_30days_lowpass_2_0-1.nc'
 fig_out = data_folder / "fig/EOF7_30days_lowpass_2_0-1.png"
 fig_out2 = data_folder / "fig/clusters-3PCs_30days_lowpass_2_0-1.png"
 z_all_ano_std = xr.open_dataset(filename)['z']
@@ -57,6 +57,33 @@ def elbow(pcs):
     plt.ylabel('inertia')
     plt.xticks(ks)
     plt.show()
+
+
+
+def silhouette(pcs):
+    from sklearn.metrics import silhouette_score
+    
+    
+     # A list holds the silhouette coefficients for each k
+    silhouette_coefficients = []
+       
+    # Notice you start at 2 clusters for silhouette coefficient
+    for k in range(2, 11):
+        kmeans = KMeans(n_clusters=k)
+        kmeans.fit(pcs)
+        score = silhouette_score(pcs, kmeans.labels_)
+        silhouette_coefficients.append(score)
+        
+        
+        
+    plt.style.use("fivethirtyeight")
+    plt.plot(range(2, 11), silhouette_coefficients)
+    plt.xticks(range(2, 11))
+    plt.xlabel("Number of Clusters")
+    plt.ylabel("Silhouette Coefficient")
+    plt.show()
+
+
 
 
 
@@ -125,11 +152,12 @@ plot(solver)
 
 
 ######################K_MEANS CLUSTERING#################
-elbow(solver.pcs())
+elbow(solver.pcs()[:,:14])
+silhouette(solver.pcs()[:,:14])
 
 model = KMeans(n_clusters=7)
 # Fit model to samples
-model.fit(solver.pcs()[:,:16])
+model.fit(solver.pcs()[:,:14])
 
 #Plot clusters on the first two PCA
 # sns.scatterplot(solver.pcs()[:,0], solver.pcs()[:,1], alpha=.1, hue = model.labels_, palette="Paired")

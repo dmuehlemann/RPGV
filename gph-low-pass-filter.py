@@ -15,8 +15,8 @@ import xarray as xr
 data_folder = Path("../data/")
 filename = data_folder / 'gph-daily-mean.nc'
 
-data_out = data_folder / 'gph-daily-mean-lowpass_2_0-25.nc'
-fig_out = data_folder / 'fig/gph-daily-mean-lowpass_2_0-25.png'
+data_out = data_folder / 'gph-daily-mean-lowpass_2_0-1.nc'
+fig_out = data_folder / 'fig/gph-daily-mean-lowpass_2_0-1.png'
 
 
 #Load data
@@ -25,7 +25,7 @@ z_all = xr.open_dataset(filename)
 
 # First, design the Buterworth filter
 N  = 2   # Filter order
-Wn = 0.25 # Cutoff frequency
+Wn = 0.1 # Cutoff frequency
 B, A = signal.butter(N, Wn, output='ba')
 
 
@@ -46,7 +46,7 @@ plt.plot(z_all.z[10000:10200, 117, 145], 'b-')
 plt.plot(z_allf.z[10000:10200, 117, 145], 'r-',)
 plt.ylabel("Geopotential height")
 plt.legend(['Original','Filtered'])
-plt.title("4-day lowpass filtered geopotential height")
+plt.title("10-day lowpass filtered geopotential height")
 ax1.axes.get_xaxis().set_visible(False)
 
 ax1 = fig.add_subplot(212)

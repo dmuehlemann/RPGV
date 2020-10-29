@@ -18,13 +18,13 @@ import matplotlib as mpl
 
 data_folder = Path("../data/")
 
-filename_std_ano = data_folder / 'z_all_std_ano_30days_lowpass_2_0-25.nc'
+filename_std_ano = data_folder / 'z_all_std_ano_30days_lowpass_2_0-1.nc'
 z_all_std_ano = xr.open_dataset(filename_std_ano)['z']
 
-file_wr = data_folder / 'wr_time-c7_std_30days_lowpass_2_0-25_short.nc'
+file_wr = data_folder / 'wr_time-c7_std_30days_lowpass_2_0-1_short10.nc'
 wr = xr.open_dataset(file_wr)
 
-fig_out = data_folder / 'fig/wr_plot_30days_lowpass_2_0-25_short.png'
+fig_out = data_folder / 'fig/wr_plot_30days_lowpass_2_0-1_short10.png'
 
 ######################Plot results#################
 
@@ -86,7 +86,7 @@ for i in range(0,wr.wr.max().values+1):
         
 
 
-plt.suptitle("Mean weather regime fields (standardized anomalies 30days + lowpass filter (2/0.25))", fontsize=20)
+plt.suptitle("Mean weather regime fields (standardized anomalies 30days + lowpass filter (2/0.1))", fontsize=20)
 plt.savefig(fig_out)
 
 

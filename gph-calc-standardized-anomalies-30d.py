@@ -11,8 +11,8 @@ from pathlib import Path
 
 #Input and output data
 data_folder = Path("../data/")
-filename = data_folder / 'gph-daily-mean-lowpass_2_0-25.nc'
-f_out = data_folder / 'z_all_std_ano_30days_lowpass_2_0-25.nc'
+filename = data_folder / 'gph-daily-mean-lowpass_2_0-1.nc'
+f_out = data_folder / 'z_all_std_ano_30days_lowpass_2_0-1.nc'
 
 z_all = xr.open_dataset(filename)
 
