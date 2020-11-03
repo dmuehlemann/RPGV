@@ -17,6 +17,7 @@ import pandas as pd
 # import geopandas as gpd
 # from mapclassify import Quantiles, UserDefined
 from scipy.optimize import minimize
+from scipy.optimize import minimize_scalar
 
 
 ######################Load Datasets#################
@@ -43,13 +44,18 @@ ic = ic.to_xarray()
 ####################################################
 
 
-def func(ic):
-    #asdf
-   print(ic)
+def func(ic_arr):
+
+   print(ic_arr)
    
    #########SPLIT mal ICs auf
-   var = (delta_cf[2].sel(season='DJF')*ic).to_array().sum() - (delta_cf[0].sel(season='DJF')*ic).to_array().sum()
-   # print(var)
+   var = (delta_cf[2].sel(season='DJF').to_array().values*ic_arr).sum() - (delta_cf[0].sel(season='DJF').to_array().values*ic_arr).sum()
+   # var = (delta_cf[2].sel(season='DJF').to_array()*ic_arr)
+   # var= delta_cf[2].sel(season='DJF').DE*ic_test
+   
+   # var=ic_test*ic_test+5
+   
+   print(var)
    return(var)
 
 
@@ -64,15 +70,16 @@ for i in range(0, int(ninja.wr.max())):
 
     
 #create Testdata IC
-ic = ic.DE[9].to_dataset().merge(ic.ES[9]).to_array()
+ic_temp = ic.DE[9].to_dataset().merge(ic.ES[9])
+ic_arr = ic_temp.to_array().values
 
 
 # x0 = np.array([1.3, 0.7, 0.8, 1.9, 1.2])
-res = minimize(func, ic, method='nelder-mead',
-               options={'xatol': 8000, 'disp': True})
+res = minimize(func, ic_arr, method='L-BFGS-B',bounds=[(48960, 100000),(8761,100000)],
+                options={'maxiter': 10})
 
 
-
+# minimize_scalar(lambda ic_arr: func(ic_arr), bounds=(0,500), method='bounded', options={'maxiter': 10})
 
 
 
