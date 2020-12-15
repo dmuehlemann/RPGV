@@ -102,7 +102,7 @@ b2 = np.array([2566,  946])
 
 
 
-res_bounds = lsq_linear(c_test, b0)#, bounds=(lb, ub))
+res_bounds = lsq_linear(c_test, b0), bounds=(lb, ub))
 res_P = lsq_linear(c_test, b1, bounds=(lb_null, ub_inf))
 res_P2 = lsq_linear(c_test, b2, bounds=(lb_null, ub_inf))
 res_both = lsq_linear(c_test, b1, bounds=(lb, ub))

@@ -76,10 +76,16 @@ for i in ninja:
 ######################END CREATE DATASET#########################
 
 
-######################DEFINE CONSTRAINTS AND BOUNDS#########################                          
+######################DEFINE CONSTRAINTS AND BOUNDS#########################
+"""
+According to a recent 100% RES scenario of the Energy Watch Group, the EU needs 
+to increase its PV capacity from 117 GW to over 630 GW by 2025 and 1.94 TW by 2050 
+in order to cover 100% of its electricity needs by renewable energy.
+
+"""                          
 #Define lower and upper bound with already installed capacity   
 lb = ic_reduced.to_array().values
-ub = lb *5
+ub = lb *30
 lb_null = ic_reduced.to_array().values *0
 ub_inf = np.array(np.ones(lb_null.shape) * np.inf)
 
@@ -89,7 +95,9 @@ ub_inf = np.array(np.ones(lb_null.shape) * np.inf)
 b = np.zeros(A.shape[0])
 #Add tot IC constraint
 A = np.append(A, [np.ones(A.shape[1])], 0)
-b = np.append(b, ic_reduced.to_array().sum()*10)      
+
+#results in 1.965TW IC --> see comment above
+b = np.append(b, ic_reduced.to_array().sum()*15)      
 
 
 #Define total production
@@ -102,7 +110,11 @@ P = mean_season.sel(season='DJF').to_array() * ic_reduced.to_array()
 
 ###########calculate least sqaure with matrix A and vector b and evaluate result#########################      
 #Calc LSQ
-res = lsq_linear(A, b, bounds=(lb,ub))
+res = lsq_linear(A, b)#, bounds=(lb,ub))
+res_bounds = lsq_linear(A, b, bounds=(lb,ub))
+res_bounds_inf = lsq_linear(A, b, bounds=(lb,ub_inf))
+
+
 
 dif = res.x -lb
 ic_reduced.to_array()[np.where(dif>1)]
