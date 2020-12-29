@@ -134,7 +134,7 @@ for i in range(0,len(wr.wr.values)-9):
 for i in range(0,len(wr.wr.values)-10):
     if wr.wr.values[i] != wr.wr.values[i-1] and wr.wr.values[i] == wr.wr.values[i+1] and wr.wr.values[i]==wr.wr.values[i+2] and wr.wr.values[i]==wr.wr.values[i+3] and wr.wr.values[i]!=wr.wr.values[i+4] and wr.wr.values[i]!=wr.wr.values[i+5] and wr.wr.values[i]!=wr.wr.values[i+6] and wr.wr.values[i]!=wr.wr.values[i+7] and wr.wr.values[i]!=wr.wr.values[i+8] and wr.wr.values[i]!=wr.wr.values[i+9] and wr.wr.values[i]!=wr.wr.values[i+10]:
         # print(i)
-        ninedays = ninedays +1
+        tendays = tendays +1
         wr.wr[i] = 7
         wr.wr[i+1] = 7
         wr.wr[i+2] = 7

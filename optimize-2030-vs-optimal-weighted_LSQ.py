@@ -53,7 +53,7 @@ ic_2030 = ic_2030.append(ic_pot_df)
 
 #Load data ninja season dataset
 ninja_season= []
-for i in range(0,8):
+for i in range(0,7):
     filename = 'ninja_season_wr'+str(i)+'.nc'
     temp = xr.open_dataset(data_folder / filename, mask_and_scale=False, decode_times=False)
     ninja_season.append(temp)
@@ -315,11 +315,11 @@ data_var = np.c_[current_state,var_regions]
 
 # df_var = pd.DataFrame((data_var), columns=['Planed IC 2030', 'With total IC (planed for 2030) as constraint', 'With total production (planed for 2030) as constraint', 'With total IC and production (planed for 2030) as constraint'])
 df_var = pd.DataFrame((data_var), columns=['Planed IC 2030', 'With loads per region as constraint'])
-for i in range(0,8):
+for i in range(0,7):
     df_var = df_var.rename({i: 'WR'+str(i)}, axis='index')
-    df_var = df_var.rename({i+8:'WR'+str(i)}, axis='index')
-    df_var = df_var.rename({i+16:'WR'+str(i)}, axis='index')
-    df_var = df_var.rename({i+24:'WR'+str(i)}, axis='index')
+    df_var = df_var.rename({i+7:'WR'+str(i)}, axis='index')
+    df_var = df_var.rename({i+14:'WR'+str(i)}, axis='index')
+    df_var = df_var.rename({i+21:'WR'+str(i)}, axis='index')
 
 
 #Calc Variance per season
@@ -328,11 +328,11 @@ var_winter = []
 var_spring = []
 var_summer = []
 var_autumn = []
-for i in range(0,8):
-    var_winter.extend(abs(df_var[:].to_numpy()[i+1:8] - df_var[:].to_numpy()[i]))
-    var_spring.extend(abs(df_var[:].to_numpy()[i+9:16] - df_var[:].to_numpy()[i+8]))
-    var_summer.extend(abs(df_var[:].to_numpy()[i+17:24] - df_var[:].to_numpy()[i+16]))
-    var_autumn.extend(abs(df_var[:].to_numpy()[i+25:32] - df_var[:].to_numpy()[i+24]))
+for i in range(0,7):
+    var_winter.extend(abs(df_var[:].to_numpy()[i+1:7] - df_var[:].to_numpy()[i]))
+    var_spring.extend(abs(df_var[:].to_numpy()[i+8:14] - df_var[:].to_numpy()[i+7]))
+    var_summer.extend(abs(df_var[:].to_numpy()[i+15:21] - df_var[:].to_numpy()[i+14]))
+    var_autumn.extend(abs(df_var[:].to_numpy()[i+22:28] - df_var[:].to_numpy()[i+21]))
     
 tot_var_winter = sum(var_winter)
 tot_var_spring = sum(var_spring)
@@ -372,14 +372,14 @@ ax_var = df_var.plot(kind='bar', figsize=(16,9))
 ax_var.set_title('Optimized IC distribution (with planed IC for 2030)', fontsize=20, pad=20)
 ax_var.set_ylabel('Deviation of PV power production from the seasonal mean in MW', fontsize=15)
 ax_var.set_xlabel('Weather regime', fontsize=15, labelpad=10)
-ax_var.axvspan(0,7.5, facecolor='w', alpha=0.2, label='Winter')
-ax_var.text(3, ax_var.yaxis.get_data_interval().min(), 'Winter', fontsize=15)
-ax_var.axvspan(7.5,15.5, facecolor='g', alpha=0.2, label='Spring')
-ax_var.text(11, ax_var.yaxis.get_data_interval().min(), 'Spring', fontsize=15)
-ax_var.axvspan(15.5,23.5, facecolor='r', alpha=0.2, label='Summer')
-ax_var.text(19, ax_var.yaxis.get_data_interval().min(), 'Summer', fontsize=15)
-ax_var.axvspan(23.5,32, facecolor='b', alpha=0.2, label='Autumn')
-ax_var.text(27, ax_var.yaxis.get_data_interval().min(), 'Autumn', fontsize=15)
+ax_var.axvspan(0,6.5, facecolor='w', alpha=0.2, label='Winter')
+ax_var.text(2, ax_var.yaxis.get_data_interval().min(), 'Winter', fontsize=15)
+ax_var.axvspan(6.5,13.5, facecolor='g', alpha=0.2, label='Spring')
+ax_var.text(9, ax_var.yaxis.get_data_interval().min(), 'Spring', fontsize=15)
+ax_var.axvspan(13.5,20.5, facecolor='r', alpha=0.2, label='Summer')
+ax_var.text(16, ax_var.yaxis.get_data_interval().min(), 'Summer', fontsize=15)
+ax_var.axvspan(20.5,28, facecolor='b', alpha=0.2, label='Autumn')
+ax_var.text(23, ax_var.yaxis.get_data_interval().min(), 'Autumn', fontsize=15)
 fig = ax_var.get_figure()
 fig.savefig(data_folder / str('fig/' + project +'_variability.png'))
 
