@@ -10,9 +10,9 @@ from pathlib import Path
 
 
 #Input and output data
-data_folder = Path("../data/")
-filename = data_folder / 'gph-daily-mean-lowpass_2_0-1.nc'
-f_out = data_folder / 'z_all_std_ano_30days_lowpass_2_0-1.nc'
+data_folder = Path("../data/radiation")
+filename = data_folder / 'ssrd-daily-mean.nc'
+f_out = data_folder / 'ssrd_std_ano_30days.nc'
 
 z_all = xr.open_dataset(filename)
 

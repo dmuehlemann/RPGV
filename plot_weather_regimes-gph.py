@@ -44,13 +44,13 @@ f, ax = plt.subplots(
     ncols=c,
     nrows=r,
     subplot_kw={"projection": ccrs.Orthographic(central_longitude=-20, central_latitude=60)},
-    figsize=(20, 6),
+    figsize=(20, 4),
 )
-cbar_ax = f.add_axes([0.3, .85, 0.4, 0.02])
+cbar_ax = f.add_axes([0.3, .2, 0.4, 0.02])
 
 
-vmax_std_ano = 2
-vmin_std_ano = -2
+vmax_std_ano = 2.1
+vmin_std_ano = -2.1
 
 for i in range(0,wr.wr.max().values+1):
     mean_wr_std_ano = z_all_std_ano[np.where(wr.wr==i)[0][:]].mean(axis=0)
@@ -91,7 +91,7 @@ for i in range(0,wr.wr.max().values+1):
         
 
 
-plt.suptitle("Mean weather regime fields (standardized anomalies 30days + lowpass filter (2/0.1))", fontsize=20)
+plt.suptitle("Mean weather regime fields (geopotential height)", fontsize=20)
 plt.savefig(fig_out)
 
 

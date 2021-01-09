@@ -18,13 +18,16 @@ import matplotlib as mpl
 
 data_folder = Path("../data/")
 
-filename_std_ano = data_folder / 'z_all_std_ano_30days_lowpass_2_0-1.nc'
-z_all_std_ano = xr.open_dataset(filename_std_ano)['z']
+
+filename_std_ano_ssrd = data_folder / 'radiation/ssrd_std_ano_30days.nc'
+ssrd_std_ano = xr.open_dataset(filename_std_ano_ssrd)['ssrd']
+
+
 
 file_wr = data_folder / 'wr_time-c7_std_30days_lowpass_2_0-1_short3.nc'
 wr = xr.open_dataset(file_wr)
 
-fig_out = data_folder / 'fig/wr_plot_30days_lowpass_2_0-1_short3.png'
+fig_out = data_folder / 'fig/ssrd_plot_30days_lowpass_2_0-1_short3.png'
 
 ######################Plot results#################
 
@@ -45,11 +48,11 @@ f, ax = plt.subplots(
 cbar_ax = f.add_axes([0.3, .2, 0.4, 0.02])
 
 
-vmax_std_ano = 2.1
-vmin_std_ano = -2.1
+vmax_std_ano = 0.3
+vmin_std_ano = -0.3
 
 for i in range(0,wr.wr.max().values+1):
-    mean_wr_std_ano = z_all_std_ano[np.where(wr.wr==i)[0][:]].mean(axis=0)
+    mean_wr_std_ano = ssrd_std_ano[np.where(wr.wr==i)[0][:]].mean(axis=0)
     frequency = len(np.where(wr.wr == i)[0]) / len(wr.wr)
  
     if i != 0:
@@ -77,19 +80,22 @@ for i in range(0,wr.wr.max().values+1):
         title= 'WR' + str(i) + ' ' +  str(np.round(frequency * 100, decimals=1)) + "%"
         ax[i].coastlines()
         ax[i].set_global()
-        con =  mean_wr_std_ano.plot.contourf(ax=ax[i], vmin=vmin_std_ano, vmax=vmax_std_ano, cmap=cmap,
+        con = mean_wr_std_ano.plot.contourf(ax=ax[i], vmin=vmin_std_ano, vmax=vmax_std_ano, cmap=cmap,
                                   transform=ccrs.PlateCarree(), add_colorbar=False) 
-                                  # cbar_kwargs={'label': "Standardized anomalies of geoptential height at 500hPa","orientation": "horizontal"}, 
+                                  # cbar_kwargs={'label': "Standardized anomalies of surface solar radiation in J/$m^2$","orientation": "horizontal"}, 
                                   # cbar_ax=cbar_ax)
         cb = plt.colorbar(con, cax=cbar_ax, orientation='horizontal')
-        cb.set_label(label='Standardized anomalies of geoptential height at 500 hPa',size=16,fontfamily='times new roman')
+        cb.set_label(label='Standardized anomalies of surface solar radiation in J/$m^2$',size=16,fontfamily='times new roman')
         ax[0].set_title(title, fontsize=20, **csfont)
         
-               
+        # cb.set_label(label='Temperature ($^{\circ}$C)', size='large', weight='bold')
         
+        
+               
+  
 
 
-plt.suptitle("Mean weather regime anomalies (geopotential height)", fontsize=20, **csfont)
+plt.suptitle("Mean weather regime anomalies (surface solar radiation)", fontsize=20, **csfont)
 plt.savefig(fig_out)
 
 

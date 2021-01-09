@@ -15,8 +15,8 @@ import xarray as xr
 data_folder = Path("../data/")
 filename = data_folder / 'gph-daily-mean.nc'
 
-data_out = data_folder / 'gph-daily-mean-lowpass_2_0-1.nc'
-fig_out = data_folder / 'fig/gph-daily-mean-lowpass_2_0-1.png'
+data_out = data_folder / 'gph-daily-mean-lowpass_2_0-025.nc'
+fig_out = data_folder / 'fig/gph-daily-mean-lowpass_2_0-025.png'
 
 
 #Load data
@@ -25,7 +25,7 @@ z_all = xr.open_dataset(filename)
 
 # First, design the Buterworth filter
 N  = 2   # Filter order
-Wn = 0.1 # Cutoff frequency
+Wn = 0.25 # Cutoff frequency
 B, A = signal.butter(N, Wn, output='ba')
 
 
@@ -40,25 +40,35 @@ z_allf = xr.apply_ufunc(
 
 
 # Make plots
-fig = plt.figure()
-ax1 = fig.add_subplot(211)
-plt.plot(z_all.z[10000:10200, 117, 145], 'b-')
-plt.plot(z_allf.z[10000:10200, 117, 145], 'r-',)
-plt.ylabel("Geopotential height")
-plt.legend(['Original','Filtered'])
-plt.title("10-day lowpass filtered geopotential height")
-ax1.axes.get_xaxis().set_visible(False)
-
-ax1 = fig.add_subplot(212)
-plt.plot(z_all.z[10000:10200, 117, 145]-z_allf.z[10000:10200, 117, 145], 'b-')
-plt.ylabel("Geopotential height")
-plt.xlabel("Days")
-plt.legend(['Residuals'])
-
+d = 10000
+a=10150
+b=100
+c=150
+for i in range(0,10):
+    fig = plt.figure()
+    ax1 = fig.add_subplot(211)
+    plt.plot(z_all.z[d:a, b, c], 'b-')
+    plt.plot(z_allf.z[d:a, b, c], 'r-',)
+    plt.ylabel("Geopotential height")
+    plt.legend(['Original','Filtered'])
+    plt.title("4-day lowpass filtered geopotential height")
+    ax1.axes.get_xaxis().set_visible(False)
+    
+    ax1 = fig.add_subplot(212)
+    plt.plot(z_all.z[d:a, b, c]-z_allf.z[d:a, b, c], 'b-')
+    plt.ylabel("Geopotential height")
+    plt.xlabel("Days")
+    plt.legend(['Residuals'])
+    name= 'fig/filter/gph-daily-mean-lowpass_2_0-25_150d'+str(i)+'.png'
+    a = a +5
+    b = b +5
+    c = c+5
+    d = d +5
+    fig.savefig(data_folder / name)
 
 
 #save results and plot
-z_allf.to_netcdf(data_out)
-fig.savefig(fig_out)
+# z_allf.to_netcdf(data_out)
+# fig.savefig(fig_out)
 
 

@@ -25,17 +25,17 @@ data_folder = Path("../data/")
 filename_std_ano = data_folder / 'z_all_std_ano_30days_lowpass_2_0-1.nc'
 z_all_std_ano = xr.open_dataset(filename_std_ano)['z']
 
-file_wr = data_folder / 'wr_time-c7_std_30days_lowpass_2_0-1_short10.nc'
+file_wr = data_folder / 'wr_time-c7_std_30days_lowpass_2_0-1_short3.nc'
 wr = xr.open_dataset(file_wr)
 
-file_ninja = data_folder / 'ninja_and_wr_30days_lowpass_2_0-1_short10.nc'
+file_ninja = data_folder / 'ninja_and_wr_30days_lowpass_2_0-1_short3.nc'
 ninja = xr.open_dataset(file_ninja)
 
 
 
 ###here no Brexit ;-)
 ninja = ninja.rename_vars({'GB':'UK'})
-
+ninja = ninja.rename_vars({'GR':'EL'})
 
 #####CF calculations##########
 
@@ -101,8 +101,8 @@ f, ax = plt.subplots(
 cbar_ax = f.add_axes([0.3, .93, 0.4, 0.02])
 
 
-vmax_std_ano = 1.5
-vmin_std_ano = -1.5
+vmax_std_ano = 2.1
+vmin_std_ano = -2.1
 
 vmax_cf = 0.015
 vmin_cf = -0.015
