@@ -61,7 +61,7 @@ for i in range(0,wr.wr.max().values+1):
             title= 'WR' + str(i) + ' ' +  str(np.round(frequency * 100, decimals=1)) + "%"
         ax[i].coastlines()
         ax[i].set_global()
-        mean_wr_std_ano.plot.contourf(ax=ax[i], cmap=cmap, vmin=vmin_std_ano, vmax=vmax_std_ano,
+        mean_wr_std_ano.plot.imshow(ax=ax[i], cmap=cmap, 
                                   transform=ccrs.PlateCarree(), add_colorbar=False)
         ax[i].set_title(title, fontsize=20, **csfont)
         
@@ -77,12 +77,12 @@ for i in range(0,wr.wr.max().values+1):
         title= 'WR' + str(i) + ' ' +  str(np.round(frequency * 100, decimals=1)) + "%"
         ax[i].coastlines()
         ax[i].set_global()
-        con =  mean_wr_std_ano.plot.contourf(ax=ax[i], vmin=vmin_std_ano, vmax=vmax_std_ano, cmap=cmap,
+        con =  mean_wr_std_ano.plot.imshow(ax=ax[i], cmap=cmap,
                                   transform=ccrs.PlateCarree(), add_colorbar=False) 
                                   # cbar_kwargs={'label': "Standardized anomalies of geoptential height at 500hPa","orientation": "horizontal"}, 
                                   # cbar_ax=cbar_ax)
         cb = plt.colorbar(con, cax=cbar_ax, orientation='horizontal')
-        cb.set_label(label='Standardized anomalies of geoptential height at 500 hPa',size=16,fontfamily='times new roman')
+        cb.set_label(label='Standardized anomalies of geoptential height at 500 hPa [unitless]',size=16,fontfamily='times new roman')
         ax[0].set_title(title, fontsize=20, **csfont)
         
                

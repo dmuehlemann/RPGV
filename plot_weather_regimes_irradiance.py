@@ -19,15 +19,16 @@ import matplotlib as mpl
 data_folder = Path("../data/")
 
 
-filename_std_ano_ssrd = data_folder / 'radiation/ssrd_std_ano_30days.nc'
+filename_std_ano_ssrd = data_folder / 'radiation/ssrd_all_std_ano.nc'
 ssrd_std_ano = xr.open_dataset(filename_std_ano_ssrd)['ssrd']
 
 
 
 file_wr = data_folder / 'wr_time-c7_std_30days_lowpass_2_0-1_short3.nc'
 wr = xr.open_dataset(file_wr)
+wr = wr.sel(time=slice("1981-01-01", "2020-05-31"))
 
-fig_out = data_folder / 'fig/ssrd_plot_30days_lowpass_2_0-1_short3.png'
+fig_out = data_folder / 'fig/ssrd_plot.png'
 
 ######################Plot results#################
 
@@ -48,8 +49,12 @@ f, ax = plt.subplots(
 cbar_ax = f.add_axes([0.3, .2, 0.4, 0.02])
 
 
-vmax_std_ano = 0.3
-vmin_std_ano = -0.3
+
+
+vmax_std_ano = 0.4
+vmin_std_ano = -0.4
+
+
 
 for i in range(0,wr.wr.max().values+1):
     mean_wr_std_ano = ssrd_std_ano[np.where(wr.wr==i)[0][:]].mean(axis=0)
@@ -64,8 +69,7 @@ for i in range(0,wr.wr.max().values+1):
             title= 'WR' + str(i) + ' ' +  str(np.round(frequency * 100, decimals=1)) + "%"
         ax[i].coastlines()
         ax[i].set_global()
-        mean_wr_std_ano.plot.contourf(ax=ax[i], cmap=cmap, vmin=vmin_std_ano, vmax=vmax_std_ano,
-                                  transform=ccrs.PlateCarree(), add_colorbar=False)
+        mean_wr_std_ano.plot.imshow(ax=ax[i], cmap=cmap, transform=ccrs.PlateCarree(), add_colorbar=False, vmin=vmin_std_ano, vmax=vmax_std_ano)
         ax[i].set_title(title, fontsize=20, **csfont)
         
         
@@ -80,18 +84,20 @@ for i in range(0,wr.wr.max().values+1):
         title= 'WR' + str(i) + ' ' +  str(np.round(frequency * 100, decimals=1)) + "%"
         ax[i].coastlines()
         ax[i].set_global()
-        con = mean_wr_std_ano.plot.contourf(ax=ax[i], vmin=vmin_std_ano, vmax=vmax_std_ano, cmap=cmap,
-                                  transform=ccrs.PlateCarree(), add_colorbar=False) 
-                                  # cbar_kwargs={'label': "Standardized anomalies of surface solar radiation in J/$m^2$","orientation": "horizontal"}, 
-                                  # cbar_ax=cbar_ax)
+        con = mean_wr_std_ano.plot.imshow(ax=ax[i], cmap=cmap, transform=ccrs.PlateCarree(), add_colorbar=False, vmin=vmin_std_ano, vmax=vmax_std_ano) 
+                                  
         cb = plt.colorbar(con, cax=cbar_ax, orientation='horizontal')
-        cb.set_label(label='Standardized anomalies of surface solar radiation in J/$m^2$',size=16,fontfamily='times new roman')
+        cb.set_label(label='Standardized anomalies of surface solar radiation [unitless]',size=16,fontfamily='times new roman')
         ax[0].set_title(title, fontsize=20, **csfont)
         
         # cb.set_label(label='Temperature ($^{\circ}$C)', size='large', weight='bold')
         
         
-               
+extent = [-10, 35, 34, 72]
+for i in ax:
+    i.set_extent(extent)
+    # i.gridlines()
+    # i.coastlines(resolution='10m')               
   
 
 
