@@ -118,8 +118,7 @@ for i in range(0,wr.wr.max().values+1):
         title= 'WR' + str(i) + ' ' +  str(np.round(frequency * 100, decimals=1)) + "%"
         ax[0, i].coastlines()
         ax[0, i].set_global()
-        mean_wr_std_ano.plot.contourf(ax=ax[0, i], cmap=cmap, vmin=vmin_std_ano, vmax=vmax_std_ano,
-                                  transform=ccrs.PlateCarree(), add_colorbar=False)
+        mean_wr_std_ano.plot.imshow(ax=ax[0,i], cmap=cmap, transform=ccrs.PlateCarree(), add_colorbar=False)
         ax[0, i].set_title(title, fontsize=16)
         
         
@@ -158,10 +157,9 @@ for i in range(0,wr.wr.max().values+1):
         title= 'WR' + str(i) + ' ' +  str(np.round(frequency * 100, decimals=1)) + "%"
         ax[0, i].coastlines()
         ax[0, i].set_global()
-        mean_wr_std_ano.plot.contourf(ax=ax[0, i], vmin=vmin_std_ano, vmax=vmax_std_ano, cmap=cmap,
-                                  transform=ccrs.PlateCarree(), add_colorbar=True, 
-                                  cbar_kwargs={'label': "Standardized anomalies of geoptential height at 500hPa","orientation": "horizontal"}, 
-                                  cbar_ax=cbar_ax)
+        con = mean_wr_std_ano.plot.imshow(ax=ax[0,i],  cmap=cmap, transform=ccrs.PlateCarree(), add_colorbar=False) 
+        cb = plt.colorbar(con, cax=cbar_ax, orientation='horizontal')
+        cb.set_label(label='Standardized anomalies of geoptential height at 500hPa [unitless]',size=16,fontfamily='times new roman')
         ax[0, i].set_title(title, fontsize=16) 
         
         
@@ -229,6 +227,6 @@ ax[5,0].set_position(pos2)
 #¶plt.subplots_adjust(left=0.05, right=0.92, bottom=0.25)
 
 plt.suptitle("Mean weather regime fields (standardized anomalies) and its country specific capacity factor anomalie", fontsize=20)
-plt.savefig("../data/fig/cf_ano_and_wr_plot_lowpass0-1.png")
+plt.savefig("../data/fig/cf_ano_and_wr_plot_lowpass0-1_v2.png")
 
 
