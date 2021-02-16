@@ -157,12 +157,12 @@ in order to cover 100% of its electricity needs by renewable energy.
 """     
 
 #Define project name which is used for filesaving
-project = 'Scenario_1'
+project = 'Scenario_1_no-ub'
                      
 #Define lower and upper bound with already installed capacity   
 lb = ic_reduced.to_array().values
-ub = ic_reduced_pot.to_array().values
-
+ub = ic_reduced_pot.to_array().values*np.inf
+ub2 = ic_reduced_pot.to_array().values
 
 #Define vector b with zeros for variability reduction
 b = np.zeros(A_all.shape[0])
@@ -205,10 +205,10 @@ A_S1 = np.append(A_S1, [mean_season.mean().to_array()], 0)
 W_S1 = np.ones(b_S1.shape)
 
 #Installed capacity
-W_S1[-2]=0
+W_S1[-2]=0.01
 
 #Production
-W_S1[-1]=10
+W_S1[-1]=1
 
 
 #add weightning to coefficent matrix A and target vector b
@@ -475,7 +475,7 @@ df_ic = pd.DataFrame((data_ic), columns=['Installed PV capacity 2019', 'Installe
 df_ic.to_excel(data_folder / str(project + 'new-ic.xlsx'))
 #ic minus lower bound
 df_ic_lb = round((df_ic[['Installed PV capacity planned for 2030', 'Installed PV capacity and production (2030) as constraint (S1)']].transpose() -lb).transpose())
-df_ic_ub = round((df_ic[['Installed PV capacity planned for 2030', 'Installed PV capacity and production (2030) as constraint (S1)']].transpose() -ub).transpose())
+df_ic_ub = round((df_ic[['Installed PV capacity planned for 2030', 'Installed PV capacity and production (2030) as constraint (S1)']].transpose() -ub2).transpose())
 
 
 #Read shapefile using Geopandas

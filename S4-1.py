@@ -91,18 +91,17 @@ ic_2030_xr = ic_2030.to_xarray()
 #Remove unneeded data and add need data from eurostat
 country_load_year = country_load_year[country_load_year.columns.drop(list(country_load_year.filter(regex='_')))]
 
+#MW to GW
+# country_load_year = country_load_year/1000
 
 #missing countries in open power data --> #'MT', 'AL','MK', 'BA'#'MD'
-country_load_year['MT'] = eurostat_country_load['Malta'].values
-country_load_year['AL'] = eurostat_country_load['Albania'].values
-country_load_year['MK'] = eurostat_country_load['North Macedonia'].values
-country_load_year['BA'] = eurostat_country_load['Bosnia and Herzegovina'].values
-country_load_year['MD'] = eurostat_country_load['Moldova'].values
+country_load_year['MT'] = eurostat_country_load['Malta'].values*1000
+country_load_year['AL'] = eurostat_country_load['Albania'].values*1000
+country_load_year['MK'] = eurostat_country_load['North Macedonia'].values*1000
+country_load_year['BA'] = eurostat_country_load['Bosnia and Herzegovina'].values*1000
+country_load_year['MD'] = eurostat_country_load['Moldova'].values*1000
 
 country_load_year = country_load_year.reindex(sorted(country_load_year.columns), axis=1)
-
-
-last_value = country_load_year.notna()[::-1].idxmax()
 
 #####################END LOAD DATASET##########################################
 
@@ -140,9 +139,23 @@ for i in ninja:
 
 
 #ic_reduced_pot --> add IC 2030 * 5 if na
+
+
+
 for i in ic_reduced_pot:
     if np.isnan(ic_reduced_pot[i]):
-        ic_reduced_pot[i] = ic_reduced_2030[i]*5
+        ic_reduced_pot[i] = ic_reduced_2030[i]* ic_reduced_pot.to_array().sum() / ic_reduced.to_array().sum()
+
+
+
+load = ic_reduced.copy()
+cf = ninja.mean().drop_vars(wr)
+last_value = country_load_year.notna()[::-1].idxmax()
+
+for i in country_load_year:
+    load[i] = country_load_year[i][last_value[i]]
+
+ic_min_load = (load.drop_vars('UA')/ (365*24)) / cf *0.1 
 
 
 ######################END CREATE DATASET#######################################   
@@ -157,11 +170,32 @@ in order to cover 100% of its electricity needs by renewable energy.
 """     
 
 #Define project name which is used for filesaving
-project = 'Scenario_1'
+project = 'Scenario_4-1'
+var_2019 = 'Variability with installed PV capacity 2019'
+var_ref = 'Variability with installed PV capacity planned for 2030' #'Variability with installed PV capacity planned for 2030'
+var_calc = 'Variability with minimal inland PV production as constraint (S4)'
+IC_2019_name = 'Installed PV capacity 2019'
+IC_ref_name = 'Installed PV capacity planned for 2030'
+IC_calc_name = 'Installed PV capacity with minimal inland PV production as constraint (S4)'
+
+
                      
 #Define lower and upper bound with already installed capacity   
-lb = ic_reduced.to_array().values
+lb = ic_min_load.to_array().values
+lb2 = ic_reduced.to_array().values
+
 ub = ic_reduced_pot.to_array().values
+# ub2 = ic_reduced_pot.to_array().values
+
+
+
+
+#Norway and MD shity
+a=0
+for i in lb:
+    if lb[a]-ub[a]>0:
+        lb[a]=ub[a]-0.00000001
+    a=a+1
 
 
 #Define vector b with zeros for variability reduction
@@ -177,7 +211,7 @@ A_tot_IC = np.append(A_all, [np.ones(A_all.shape[1])], 0)
 #IC 2030
 target_IC = ic_reduced_2030.to_array().sum()
 b_tot_IC = np.append(b, target_IC)      
-
+# ic_reduced_2050 = ic_reduced/ic_reduced.to_array().sum()*target_IC
 
 #####WITH TOT PRODUCTION AS CONSTRAINT
 #Define total production
@@ -188,10 +222,10 @@ A_tot_P = np.append(A_all, [mean_season.mean().to_array()], 0)
 
 #####WITH TOT PRODUCTION PER REGIONS and IC AS CONSTRAINT
 #Define total production
-b_S1 = np.append(b, target_IC)
-b_S1 = np.append(b_S1, P)
-A_S1 = np.append(A_all, [np.ones(A_all.shape[1])], 0)
-A_S1 = np.append(A_S1, [mean_season.mean().to_array()], 0)
+b_S2 = np.append(b, target_IC)
+b_S2 = np.append(b_S2, P)
+A_S2 = np.append(A_all, [np.ones(A_all.shape[1])], 0)
+A_S2 = np.append(A_S2, [mean_season.mean().to_array()], 0)
 
 
 ######################END DEFINIDTIONn#########################################       
@@ -202,35 +236,35 @@ A_S1 = np.append(A_S1, [mean_season.mean().to_array()], 0)
 
 #add weighting
 #Variability
-W_S1 = np.ones(b_S1.shape)
+W_S2 = np.ones(b_S2.shape)
 
 #Installed capacity
-W_S1[-2]=0.01
+W_S2[-2]=0
 
 #Production
-W_S1[-1]=1
+W_S2[-1]=10
 
 
 #add weightning to coefficent matrix A and target vector b
-A_S1 = A_S1 * np.sqrt(W_S1[:,np.newaxis])
-b_S1 = b_S1 * np.sqrt(W_S1)
+A_S2 = A_S2 * np.sqrt(W_S2[:,np.newaxis])
+b_S2 = b_S2 * np.sqrt(W_S2)
 
 
 #Calc LSQ
-res_S1 = lsq_linear(A_S1, b_S1, bounds=(lb,ub))
+res_S2 = lsq_linear(A_S2, b_S2, bounds=(lb,ub))
 
 #Comparison
 
 #calculate variability for each wr season and specific IC
 current_state= (A_all * ic_reduced.to_array().values).sum(axis=1)
 state_2030 = (A_all * ic_reduced_2030.to_array().values).sum(axis=1)
-var_S1 = (A_all * res_S1.x).sum(axis=1)
+var_S2 = (A_all * res_S2.x).sum(axis=1)
 
-# data_var = np.c_[current_state,var_tot_IC, var_tot_P,var_S1]
-data_var = np.c_[current_state, state_2030,var_S1]
+# data_var = np.c_[current_state,var_tot_IC, var_tot_P,var_S2]
+data_var = np.c_[current_state, state_2030,var_S2]
 
 # df_var = pd.DataFrame((data_var), columns=['Planned IC 2030', 'With total IC (planned for 2030) as constraint', 'With total production (Planned for 2030) as constraint', 'With total IC and production (Planned for 2030) as constraint'])
-df_var = pd.DataFrame((data_var), columns=['Variability with installed PV capacity 2019', 'Variability with installed PV capacity planned for 2030', 'Variability with installed PV capacity and production (2030) as constraint (S1)'])
+df_var = pd.DataFrame((data_var), columns=[var_2019, var_ref, var_calc])
 for i in range(0,8):
     df_var = df_var.rename({i: 'WR'+str(i)}, axis='index')
     df_var = df_var.rename({i+8:'WR'+str(i)}, axis='index')
@@ -255,6 +289,21 @@ frequency = frequency.append(tot_frequency).rename({0: 'tot'})
 frequency = frequency.rename(columns={'WR7':'no regime'})
 
 
+#calculate transition from one wr to next wr
+df_transition_fre = []
+for i in ('DJF', 'MAM', 'JJA', 'SON'):
+    # print(i)
+    df_transition = pd.DataFrame(np.zeros((8,8)),
+                   columns=[0,1,2,3,4,5,6,7])
+    wr_list = wr.wr[wr.groupby('time.season').groups[i]].values.tolist() 
+    for i, j in enumerate(wr_list[:-1]):
+        if j  != wr_list[i+1]: 
+            # print(wr_list[i])
+            # print(wr_list[i+1])
+            df_transition[wr_list[i]][wr_list[i+1]] = df_transition[wr_list[i]][wr_list[i+1]] + 1
+          
+    df_transition_fre.append(df_transition / df_transition.to_numpy().flatten().sum())
+
 #calcualte frequency times #days of wr per season --> for toal variability
 temp_fre_DJF = np.transpose(np.array([frequency.loc['DJF']]*3))
 temp_fre_MAM = np.transpose(np.array([frequency.loc['MAM']]*3))
@@ -264,13 +313,14 @@ temp_fre = np.concatenate((temp_fre_DJF, temp_fre_MAM, temp_fre_JJA, temp_fre_SO
 data_var_fre = data_var * temp_fre
 
 
-# df_var_frequency = pd.DataFrame((data_var_fre), columns=['Variability with installed PV capacity 2019', 'Variability with installed PV capacity planned for 2030', 'Variability with installed PV capacity and production (2030) as constraint (S1)'])
+# df_var_frequency = pd.DataFrame((data_var_fre), columns=[var_2019, var_ref, var_calc])
 # for i in range(0,8):
 #     df_var_frequency = df_var_frequency.rename({i: 'WR'+str(i)}, axis='index')
 #     df_var_frequency = df_var_frequency.rename({i+8:'WR'+str(i)}, axis='index')
 #     df_var_frequency = df_var_frequency.rename({i+16:'WR'+str(i)}, axis='index')
 #     df_var_frequency = df_var_frequency.rename({i+24:'WR'+str(i)}, axis='index')
 # df_var_frequency = df_var_frequency.rename({'WR7':'no regime'})
+
 
 var_winter = abs(df_var[:].to_numpy()[0+1:8] - df_var[:].to_numpy()[0])
 var_spring = abs(df_var[:].to_numpy()[0+9:16] - df_var[:].to_numpy()[0+8])
@@ -285,16 +335,36 @@ for i in range(1,8):
 var_all = np.vstack((var_winter, var_spring, var_summer, var_autumn))
 
 
+############HIER WARST DU##################
+var_winterb = abs((df_var[:].to_numpy()[0] - df_var[:].to_numpy()[0:8])) * (np.transpose(np.array([df_transition_fre[0][0]+df_transition_fre[0].loc[0]]*3)))
 
-var_winter_fre = abs((df_var[:].to_numpy()[0+1:8] - df_var[:].to_numpy()[0]) * temp_fre_DJF[0] * temp_fre_DJF[0+1:8])
-var_spring_fre = abs((df_var[:].to_numpy()[0+9:16] - df_var[:].to_numpy()[0+8]) * temp_fre_MAM[0] * temp_fre_MAM[0+1:8])
-var_summer_fre = abs((df_var[:].to_numpy()[0+17:24] - df_var[:].to_numpy()[0+16]) * temp_fre_JJA[0] * temp_fre_JJA[0+1:8])
-var_autumn_fre = abs((df_var[:].to_numpy()[0+25:32] - df_var[:].to_numpy()[0+24]) * temp_fre_SON[0] * temp_fre_SON[0+1:8])
+
+
+var_winter_fre = abs((df_var[:].to_numpy()[0] - df_var[:].to_numpy()[0:8])) * (np.transpose(np.array([df_transition_fre[0][0]+df_transition_fre[0].loc[0]]*3)))
+var_spring_fre = abs((df_var[:].to_numpy()[0+8] - df_var[:].to_numpy()[8:16])) * (np.transpose(np.array([df_transition_fre[1][0]+df_transition_fre[1].loc[0]]*3)))
+var_summer_fre = abs((df_var[:].to_numpy()[0+16] - df_var[:].to_numpy()[16:24])) * (np.transpose(np.array([df_transition_fre[2][0]+df_transition_fre[2].loc[0]]*3)))
+var_autumn_fre = abs((df_var[:].to_numpy()[0+24] - df_var[:].to_numpy()[24:32])) * (np.transpose(np.array([df_transition_fre[3][0]+df_transition_fre[3].loc[0]]*3)))
 for i in range(1,8):
-    var_winter_fre= np.append(var_winter_fre, abs((df_var[:].to_numpy()[i+1:8] - df_var[:].to_numpy()[i])* temp_fre_DJF[i] * temp_fre_DJF[i+1:8]), axis=0)
-    var_spring_fre = np.append(var_spring_fre, abs((df_var[:].to_numpy()[i+9:16] - df_var[:].to_numpy()[i+8])* temp_fre_MAM[i] * temp_fre_MAM[i+1:8]), axis=0)
-    var_summer_fre = np.append(var_summer_fre, abs((df_var[:].to_numpy()[i+17:24] - df_var[:].to_numpy()[i+16])* temp_fre_JJA[i] * temp_fre_JJA[i+1:8]), axis=0)
-    var_autumn_fre = np.append(var_autumn_fre, abs((df_var[:].to_numpy()[i+25:32] - df_var[:].to_numpy()[i+24])* temp_fre_SON[i] * temp_fre_SON[i+1:8]), axis=0)
+    var_winter_fre= np.append(var_winter_fre, abs((df_var[:].to_numpy()[i] - df_var[:].to_numpy()[0:8])) * (np.transpose(np.array([df_transition_fre[0][i]+df_transition_fre[0].loc[i]]*3))), axis=0)
+    var_spring_fre = np.append(var_spring_fre,  abs((df_var[:].to_numpy()[i+8] - df_var[:].to_numpy()[8:16])) * (np.transpose(np.array([df_transition_fre[1][i]+df_transition_fre[1].loc[i]]*3))), axis=0)
+    var_summer_fre = np.append(var_summer_fre, abs((df_var[:].to_numpy()[i+16] - df_var[:].to_numpy()[16:24])) * (np.transpose(np.array([df_transition_fre[2][i]+df_transition_fre[2].loc[i]]*3))), axis=0)
+    var_autumn_fre = np.append(var_autumn_fre, abs((df_var[:].to_numpy()[i+24] - df_var[:].to_numpy()[24:32])) * (np.transpose(np.array([df_transition_fre[3][i]+df_transition_fre[3].loc[i]]*3))), axis=0)
+
+var_winter_fre = np.array([list(dict.fromkeys(var_winter_fre.transpose().tolist()[0]))[1:],
+                         list(dict.fromkeys(var_winter_fre.transpose().tolist()[1]))[1:],
+                         list(dict.fromkeys(var_winter_fre.transpose().tolist()[2]))[1:]]).transpose()
+
+var_spring_fre = np.array([list(dict.fromkeys(var_spring_fre.transpose().tolist()[0]))[1:],
+                         list(dict.fromkeys(var_spring_fre.transpose().tolist()[1]))[1:],
+                         list(dict.fromkeys(var_spring_fre.transpose().tolist()[2]))[1:]]).transpose()
+
+var_summer_fre = np.array([list(dict.fromkeys(var_summer_fre.transpose().tolist()[0]))[1:],
+                         list(dict.fromkeys(var_summer_fre.transpose().tolist()[1]))[1:],
+                         list(dict.fromkeys(var_summer_fre.transpose().tolist()[2]))[1:]]).transpose()
+
+var_autumn_fre = np.array([list(dict.fromkeys(var_autumn_fre.transpose().tolist()[0]))[1:],
+                         list(dict.fromkeys(var_autumn_fre.transpose().tolist()[1]))[1:],
+                         list(dict.fromkeys(var_autumn_fre.transpose().tolist()[2]))[1:]]).transpose()
 
 var_all_fre = np.vstack((var_winter_fre, var_spring_fre, var_summer_fre, var_autumn_fre))
 
@@ -327,8 +397,8 @@ tot_P.append((mean_season.mean().to_array() * ic_reduced.to_array()).sum())
 tot_P.append((mean_season.mean().to_array() * ic_reduced_2030.to_array()).sum())
 # tot_P.append((mean_season.mean().to_array() * res_tot_IC.x).sum())
 # tot_P.append((mean_season.mean().to_array() * res_tot_P.x).sum())
-# tot_P.append((mean_season.mean().to_array() * res_S1.x).sum())
-tot_P.append((mean_season.mean().to_array() * res_S1.x).sum())
+# tot_P.append((mean_season.mean().to_array() * res_S2.x).sum())
+tot_P.append((mean_season.mean().to_array() * res_S2.x).sum())
 
 #Total installed capacity
 tot_IC = []
@@ -336,8 +406,8 @@ tot_IC.append(ic_reduced.to_array().values.sum())
 tot_IC.append(ic_reduced_2030.to_array().values.sum())
 # tot_IC.append(res_tot_IC.x.sum())
 # tot_IC.append(res_tot_P.x.sum())
-# tot_IC.append(res_S1.x.sum())
-tot_IC.append(res_S1.x.sum())
+# tot_IC.append(res_S2.x.sum())
+tot_IC.append(res_S2.x.sum())
 
 ###############END CALCULATE LSQ AND PREPARE RESULTS###########################
 
@@ -433,12 +503,13 @@ country = []
 for i in ic_reduced_2030:
     country.append(i)
 
-# data_ic = np.c_[ic_reduced_2030.to_array().values, res_tot_IC.x, res_tot_P.x, res_S1.x]
-data_ic = np.c_[ic_reduced.to_array().values, ic_reduced_2030.to_array().values, res_S1.x]
-df_ic = pd.DataFrame((data_ic), columns=['Installed PV capacity 2019', 'Installed PV capacity planned for 2030', 'Installed PV capacity and production (2030) as constraint (S1)'], index=country)
+# data_ic = np.c_[ic_reduced_2030.to_array().values, res_tot_IC.x, res_tot_P.x, res_S2.x]
+data_ic = np.c_[ic_reduced.to_array().values, ic_reduced_2030.to_array().values, res_S2.x]
+df_ic = pd.DataFrame((data_ic), columns=[IC_2019_name, IC_ref_name, IC_calc_name], index=country)
 df_ic.to_excel(data_folder / str(project + 'new-ic.xlsx'))
 #ic minus lower bound
-df_ic_lb = round((df_ic[['Installed PV capacity planned for 2030', 'Installed PV capacity and production (2030) as constraint (S1)']].transpose() -lb).transpose())
+df_ic_lb = round((df_ic[[IC_ref_name, IC_calc_name]].transpose() -lb2).transpose())
+df_ic_ub = round((df_ic[[IC_ref_name, IC_calc_name]].transpose() -ub).transpose())
 
 
 #Read shapefile using Geopandas
@@ -488,7 +559,7 @@ for i in ic_plotting:
                                   )
         
         ax[c].set_xlim(left=-13, right=35)
-        ax[c].set_ylim(bottom=35, top=70) 
+        ax[c].set_ylim(bottom=34, top=70) 
         ax[c].set_title(r"$\bf{" + i.columns[3].replace(' ', '~') + "}$" +
                         '\n Total installed PV capacity (GW): ' + str((tot_IC[c]/1000).round(1)) + 
                         '\n Total mean PV production (GW): ' + str((tot_P[c].values/1000).round(1)) +
@@ -501,9 +572,13 @@ for i in ic_plotting:
         i.dropna().plot(ax=ax[c], column=i.columns[3], cmap=cmap,edgecolor='black',
                                   vmax=vmax, vmin=vmin,
                                   )
+        if c==2:
+            for cc in (df_ic_ub[IC_calc_name].where(df_ic_ub[IC_calc_name]>-1)).dropna().index:
+                i.where(i.country_code==cc).plot(ax=ax[c],column=i.columns[3], cmap=cmap, edgecolor='black',linewidth=0.1,
+                                  vmax=vmax, vmin=vmin,hatch='///')
         
         ax[c].set_xlim(left=-13, right=35)
-        ax[c].set_ylim(bottom=35, top=70) 
+        ax[c].set_ylim(bottom=34, top=70) 
         ax[c].set_title(r"$\bf{" + i.columns[3].replace(' ', '~') + "}$" +
                         '\n Total installed PV capacity (GW): ' + str((tot_IC[c]/1000).round(1)) + 
                         '\n Total mean PV production (GW): ' + str((tot_P[c].values/1000).round(1)) +
@@ -546,7 +621,7 @@ for i in ic_lb_plotting:
     if c == 0:
         # divider = make_axes_locatable(ax[1,c])
         # cax = divider.append_axes("bottom", size="5%", pad=0.4)
-        i.dropna().plot(ax=ax[c], column=i.columns[3], cmap=cmap, edgecolor='black',
+        ma = i.dropna().plot(ax=ax[c], column=i.columns[3], cmap=cmap, edgecolor='black',
                                   vmax=vmax, vmin=vmin,
                                   legend=True,
                                   legend_kwds={'orientation': "horizontal",}
@@ -554,7 +629,7 @@ for i in ic_lb_plotting:
                                   )
         
         ax[c].set_xlim(left=-13, right=35)
-        ax[c].set_ylim(bottom=35, top=70) 
+        ax[c].set_ylim(bottom=34, top=70) 
         ax[c].set_title(r"$\bf{" + i.columns[3].replace(' ', '~') +'~(only~additional)' + "}$" +
                         '\n Additional installed PV capacity (GW): ' + str(((tot_IC[c+1]-tot_IC[0])/1000).round(1)) + 
                         '\n Additional mean PV production (GW): ' + str(((tot_P[c+1]-tot_P[0]).values/1000).round(1)) +
@@ -564,18 +639,23 @@ for i in ic_lb_plotting:
         ax[c].set_axis_off()
         c = c +1
     else:
-        i.dropna().plot(ax=ax[c], column=i.columns[3], cmap=cmap, edgecolor='black',
+        ma = i.dropna().plot(ax=ax[c], column=i.columns[3], cmap=cmap, edgecolor='black',
                                   vmax=vmax, vmin=vmin,
                                   )
         
+        for cc in (df_ic_ub[IC_calc_name].where(df_ic_ub[IC_calc_name]>-1)).dropna().index:
+            i.where(i.country_code==cc).plot(ax=ax[c],column=i.columns[3], cmap=cmap, edgecolor='black',linewidth=0.1,
+                              vmax=vmax, vmin=vmin,hatch='///')
+        
         ax[c].set_xlim(left=-13, right=35)
-        ax[c].set_ylim(bottom=35, top=70) 
+        ax[c].set_ylim(bottom=34, top=70) 
         ax[c].set_title(r"$\bf{" + i.columns[3].replace(' ', '~') +'~(only~additional)' + "}$" +
                        '\n Additional installed PV capacity (GW): ' + str(((tot_IC[c+1]-tot_IC[0])/1000).round(1)) + 
                         '\n Additional mean PV production (GW): ' + str(((tot_P[c+1]-tot_P[0]).values/1000).round(1)) +
                         '\n Total mean variability (GW): ' + str((tot_var[c+1]/1000).round(1)) +
                         '\n Total max variability (GW): ' + str((max[c+4+1+4*(c+1)]).round(1)), 
                         fontsize=14)
+
         ax[c].set_axis_off()
         c = c +1
     
@@ -595,4 +675,3 @@ ax[0].set_position(pos4)
     
 # f.suptitle('Distribution of installed PV capacity', fontsize=30)
 f.savefig(data_folder / str('fig/' + project + '_ic-distribution_additional.png'))
-

@@ -157,11 +157,20 @@ in order to cover 100% of its electricity needs by renewable energy.
 """     
 
 #Define project name which is used for filesaving
-project = 'Scenario_1'
+project = 'Scenario_2-2_ub5'
+var_2019 = 'Variability with installed PV capacity 2019'
+var_ref = 'Variability with interpolated installed PV capacity (2050)' #'Variability with installed PV capacity planned for 2030'
+var_calc = 'Variability with estimated installed PV capacity as constraint (S2: 1.94TW)'
+IC_2019_name = 'Installed PV capacity 2019'
+IC_ref_name = 'Interpolated installed PV capacity (2050)'
+IC_calc_name = 'Estimated installed PV capacity as constraint (S2: 1.94TW)'
+
+
                      
 #Define lower and upper bound with already installed capacity   
 lb = ic_reduced.to_array().values
-ub = ic_reduced_pot.to_array().values
+ub = ic_reduced_pot.to_array().values*5
+ub2 = ic_reduced_pot.to_array().values
 
 
 #Define vector b with zeros for variability reduction
@@ -174,24 +183,24 @@ b = np.zeros(A_all.shape[0])
 A_tot_IC = np.append(A_all, [np.ones(A_all.shape[1])], 0)
 
 
-#IC 2030
-target_IC = ic_reduced_2030.to_array().sum()
+#IC 2050 IRENA 0.891
+target_IC = 1940000 #891000 #ic_reduced_2030.to_array().sum()
 b_tot_IC = np.append(b, target_IC)      
-
+ic_reduced_2050 = ic_reduced/ic_reduced.to_array().sum()*target_IC
 
 #####WITH TOT PRODUCTION AS CONSTRAINT
 #Define total production
-P = (mean_season.mean().to_array() * ic_reduced_2030.to_array()).sum()
+P = (mean_season.mean().to_array() * ic_reduced_2050.to_array()).sum()
 b_tot_P = np.append(b, P)
 A_tot_P = np.append(A_all, [mean_season.mean().to_array()], 0)
 
 
 #####WITH TOT PRODUCTION PER REGIONS and IC AS CONSTRAINT
 #Define total production
-b_S1 = np.append(b, target_IC)
-b_S1 = np.append(b_S1, P)
-A_S1 = np.append(A_all, [np.ones(A_all.shape[1])], 0)
-A_S1 = np.append(A_S1, [mean_season.mean().to_array()], 0)
+b_S2 = np.append(b, target_IC)
+b_S2 = np.append(b_S2, P)
+A_S2 = np.append(A_all, [np.ones(A_all.shape[1])], 0)
+A_S2 = np.append(A_S2, [mean_season.mean().to_array()], 0)
 
 
 ######################END DEFINIDTIONn#########################################       
@@ -202,35 +211,35 @@ A_S1 = np.append(A_S1, [mean_season.mean().to_array()], 0)
 
 #add weighting
 #Variability
-W_S1 = np.ones(b_S1.shape)
+W_S2 = np.ones(b_S2.shape)
 
 #Installed capacity
-W_S1[-2]=0
+W_S2[-2]=0
 
 #Production
-W_S1[-1]=10
+W_S2[-1]=10
 
 
 #add weightning to coefficent matrix A and target vector b
-A_S1 = A_S1 * np.sqrt(W_S1[:,np.newaxis])
-b_S1 = b_S1 * np.sqrt(W_S1)
+A_S2 = A_S2 * np.sqrt(W_S2[:,np.newaxis])
+b_S2 = b_S2 * np.sqrt(W_S2)
 
 
 #Calc LSQ
-res_S1 = lsq_linear(A_S1, b_S1, bounds=(lb,ub))
+res_S2 = lsq_linear(A_S2, b_S2, bounds=(lb,ub))
 
 #Comparison
 
 #calculate variability for each wr season and specific IC
 current_state= (A_all * ic_reduced.to_array().values).sum(axis=1)
-state_2030 = (A_all * ic_reduced_2030.to_array().values).sum(axis=1)
-var_S1 = (A_all * res_S1.x).sum(axis=1)
+state_2050 = (A_all * ic_reduced_2050.to_array().values).sum(axis=1)
+var_S2 = (A_all * res_S2.x).sum(axis=1)
 
-# data_var = np.c_[current_state,var_tot_IC, var_tot_P,var_S1]
-data_var = np.c_[current_state, state_2030,var_S1]
+# data_var = np.c_[current_state,var_tot_IC, var_tot_P,var_S2]
+data_var = np.c_[current_state, state_2050,var_S2]
 
 # df_var = pd.DataFrame((data_var), columns=['Planned IC 2030', 'With total IC (planned for 2030) as constraint', 'With total production (Planned for 2030) as constraint', 'With total IC and production (Planned for 2030) as constraint'])
-df_var = pd.DataFrame((data_var), columns=['Variability with installed PV capacity 2019', 'Variability with installed PV capacity planned for 2030', 'Variability with installed PV capacity and production (2030) as constraint (S1)'])
+df_var = pd.DataFrame((data_var), columns=[var_2019, var_ref, var_calc])
 for i in range(0,8):
     df_var = df_var.rename({i: 'WR'+str(i)}, axis='index')
     df_var = df_var.rename({i+8:'WR'+str(i)}, axis='index')
@@ -279,7 +288,7 @@ temp_fre = np.concatenate((temp_fre_DJF, temp_fre_MAM, temp_fre_JJA, temp_fre_SO
 data_var_fre = data_var * temp_fre
 
 
-# df_var_frequency = pd.DataFrame((data_var_fre), columns=['Variability with installed PV capacity 2019', 'Variability with installed PV capacity planned for 2030', 'Variability with installed PV capacity and production (2030) as constraint (S1)'])
+# df_var_frequency = pd.DataFrame((data_var_fre), columns=[var_2019, var_ref, var_calc])
 # for i in range(0,8):
 #     df_var_frequency = df_var_frequency.rename({i: 'WR'+str(i)}, axis='index')
 #     df_var_frequency = df_var_frequency.rename({i+8:'WR'+str(i)}, axis='index')
@@ -360,20 +369,20 @@ tot_var_std = np.array([[var_winter.std(axis=0)[0], var_spring.std(axis=0)[0], v
 #Total production
 tot_P = []
 tot_P.append((mean_season.mean().to_array() * ic_reduced.to_array()).sum())
-tot_P.append((mean_season.mean().to_array() * ic_reduced_2030.to_array()).sum())
+tot_P.append((mean_season.mean().to_array() * ic_reduced_2050.to_array()).sum())
 # tot_P.append((mean_season.mean().to_array() * res_tot_IC.x).sum())
 # tot_P.append((mean_season.mean().to_array() * res_tot_P.x).sum())
-# tot_P.append((mean_season.mean().to_array() * res_S1.x).sum())
-tot_P.append((mean_season.mean().to_array() * res_S1.x).sum())
+# tot_P.append((mean_season.mean().to_array() * res_S2.x).sum())
+tot_P.append((mean_season.mean().to_array() * res_S2.x).sum())
 
 #Total installed capacity
 tot_IC = []
 tot_IC.append(ic_reduced.to_array().values.sum())
-tot_IC.append(ic_reduced_2030.to_array().values.sum())
+tot_IC.append(ic_reduced_2050.to_array().values.sum())
 # tot_IC.append(res_tot_IC.x.sum())
 # tot_IC.append(res_tot_P.x.sum())
-# tot_IC.append(res_S1.x.sum())
-tot_IC.append(res_S1.x.sum())
+# tot_IC.append(res_S2.x.sum())
+tot_IC.append(res_S2.x.sum())
 
 ###############END CALCULATE LSQ AND PREPARE RESULTS###########################
 
@@ -466,16 +475,16 @@ fig.savefig(data_folder / str('fig/' + project +'_variability.png'))
 
 #add newly calculated installed capacity into one dataframe
 country = []
-for i in ic_reduced_2030:
+for i in ic_reduced_2050:
     country.append(i)
 
-# data_ic = np.c_[ic_reduced_2030.to_array().values, res_tot_IC.x, res_tot_P.x, res_S1.x]
-data_ic = np.c_[ic_reduced.to_array().values, ic_reduced_2030.to_array().values, res_S1.x]
-df_ic = pd.DataFrame((data_ic), columns=['Installed PV capacity 2019', 'Installed PV capacity planned for 2030', 'Installed PV capacity and production (2030) as constraint (S1)'], index=country)
+# data_ic = np.c_[ic_reduced_2030.to_array().values, res_tot_IC.x, res_tot_P.x, res_S2.x]
+data_ic = np.c_[ic_reduced.to_array().values, ic_reduced_2050.to_array().values, res_S2.x]
+df_ic = pd.DataFrame((data_ic), columns=[IC_2019_name, IC_ref_name, IC_calc_name], index=country)
 df_ic.to_excel(data_folder / str(project + 'new-ic.xlsx'))
 #ic minus lower bound
-df_ic_lb = round((df_ic[['Installed PV capacity planned for 2030', 'Installed PV capacity and production (2030) as constraint (S1)']].transpose() -lb).transpose())
-df_ic_ub = round((df_ic[['Installed PV capacity planned for 2030', 'Installed PV capacity and production (2030) as constraint (S1)']].transpose() -ub).transpose())
+df_ic_lb = round((df_ic[[IC_ref_name, IC_calc_name]].transpose() -lb).transpose())
+df_ic_ub = round((df_ic[[IC_ref_name, IC_calc_name]].transpose() -ub2).transpose())
 
 
 #Read shapefile using Geopandas
@@ -539,7 +548,7 @@ for i in ic_plotting:
                                   vmax=vmax, vmin=vmin,
                                   )
         if c==2:
-            for cc in (df_ic_ub['Installed PV capacity and production (2030) as constraint (S1)'].where(df_ic_ub['Installed PV capacity and production (2030) as constraint (S1)']>-1)).dropna().index:
+            for cc in (df_ic_ub[IC_calc_name].where(df_ic_ub[IC_calc_name]>-1)).dropna().index:
                 i.where(i.country_code==cc).plot(ax=ax[c],column=i.columns[3], cmap=cmap, edgecolor='black',linewidth=0.1,
                                   vmax=vmax, vmin=vmin,hatch='///')
         
@@ -609,7 +618,7 @@ for i in ic_lb_plotting:
                                   vmax=vmax, vmin=vmin,
                                   )
         
-        for cc in (df_ic_ub['Installed PV capacity and production (2030) as constraint (S1)'].where(df_ic_ub['Installed PV capacity and production (2030) as constraint (S1)']>-1)).dropna().index:
+        for cc in (df_ic_ub[IC_calc_name].where(df_ic_ub[IC_calc_name]>-1)).dropna().index:
             i.where(i.country_code==cc).plot(ax=ax[c],column=i.columns[3], cmap=cmap, edgecolor='black',linewidth=0.1,
                               vmax=vmax, vmin=vmin,hatch='///')
         
