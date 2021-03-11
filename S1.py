@@ -158,6 +158,12 @@ in order to cover 100% of its electricity needs by renewable energy.
 
 #Define project name which is used for filesaving
 project = 'Scenario_1'
+var_2019 = 'Variability with installed PV capacity 2019'
+var_ref = 'Variability with installed PV capacity planned for 2030' #'Variability with installed PV capacity planned for 2030'
+var_calc = 'Variability with PV power production (2030) as constraint (S1)'
+IC_2019_name = 'Installed PV capacity 2019'
+IC_ref_name = 'Installed PV capacity planned for 2030'
+IC_calc_name = 'Installed PV capacity with PV power production (2030) as constraint (S1)'
                      
 #Define lower and upper bound with already installed capacity   
 lb = ic_reduced.to_array().values
@@ -230,7 +236,7 @@ var_S1 = (A_all * res_S1.x).sum(axis=1)
 data_var = np.c_[current_state, state_2030,var_S1]
 
 # df_var = pd.DataFrame((data_var), columns=['Planned IC 2030', 'With total IC (planned for 2030) as constraint', 'With total production (Planned for 2030) as constraint', 'With total IC and production (Planned for 2030) as constraint'])
-df_var = pd.DataFrame((data_var), columns=['Variability with installed PV capacity 2019', 'Variability with installed PV capacity planned for 2030', 'Variability with installed PV capacity and production (2030) as constraint (S1)'])
+df_var = pd.DataFrame((data_var), columns=[var_2019, var_ref, var_calc])
 for i in range(0,8):
     df_var = df_var.rename({i: 'WR'+str(i)}, axis='index')
     df_var = df_var.rename({i+8:'WR'+str(i)}, axis='index')
@@ -383,9 +389,9 @@ tot_IC.append(res_S1.x.sum())
 
 #######Plot total variability per season#######
 df_tot_var = pd.DataFrame([tot_var_winter/1000, tot_var_spring/1000, tot_var_summer/1000, tot_var_autumn/1000, tot_var/1000], columns=df_var.columns, index=['Winter', 'Spring', 'Summer', 'Autumn', 'Total'])
-ax_tot_var = df_tot_var.plot(kind='bar', figsize=(20,10), rot=0, fontsize=14) #yerr=tot_var_std/1000, error_kw=dict(capsize=4,)
-ax_tot_var.set_ylabel("Variability in GW", fontsize=14, fontfamily='times new roman')
-ax_tot_var.legend(loc=6, bbox_to_anchor=(0.0, 0.8), fontsize=12)
+ax_tot_var = df_tot_var.plot(kind='bar', figsize=(30,15), rot=0, fontsize=24) #yerr=tot_var_std/1000, error_kw=dict(capsize=4,)
+ax_tot_var.set_ylabel("Variability in GW", fontsize=24, fontfamily='times new roman')
+ax_tot_var.legend(loc=6, bbox_to_anchor=(0.0, 0.8), fontsize=24)
 
 # create a list for tmin and max
 s = 0
@@ -443,20 +449,20 @@ fig_tot_var.savefig(data_folder / str('fig/' + project +'_tot_variability.png'))
 #######END Plot total variability per season#######
 
 #Plot deviation per weather regime and season
-ax_var = (df_var/1000).plot(kind='bar', figsize=(20,10), fontsize=14)
+ax_var = (df_var/1000).plot(kind='bar', figsize=(30,15), fontsize=24)
 #with total Planned IC / power production for 2030 as constraint for every season
-# ax_var.set_title('Optimized IC distribution (with installed PV capacity planned for 2030)', fontsize=20, pad=20)
-ax_var.legend(loc=2, fontsize=12)
-ax_var.set_ylabel('Deviation of PV power production from the seasonal mean in GW', fontsize=14)
-ax_var.set_xlabel('Weather regimes', fontsize=14, labelpad=10)
+# ax_var.set_title('Optimized IC distribution (with installed PV capacity planned for 2030)', fontsize=24, pad=20)
+ax_var.legend(loc=2, fontsize=24)
+ax_var.set_ylabel('Deviation of PV power production from the seasonal mean in GW', fontsize=24)
+ax_var.set_xlabel('Weather regimes', fontsize=24, labelpad=10)
 ax_var.axvspan(0,7.5, facecolor='w', alpha=0.2, label='Winter')
-ax_var.text(2.5, ax_var.yaxis.get_data_interval().min(), 'Winter', fontsize=14)
+ax_var.text(2.5, ax_var.yaxis.get_data_interval().min(), 'Winter', fontsize=24)
 ax_var.axvspan(7.5,15.5, facecolor='g', alpha=0.2, label='Spring')
-ax_var.text(10.5, ax_var.yaxis.get_data_interval().min(), 'Spring', fontsize=14)
+ax_var.text(10.5, ax_var.yaxis.get_data_interval().min(), 'Spring', fontsize=24)
 ax_var.axvspan(15.5,23.5, facecolor='r', alpha=0.2, label='Summer')
-ax_var.text(18.5, ax_var.yaxis.get_data_interval().min(), 'Summer', fontsize=14)
+ax_var.text(18.5, ax_var.yaxis.get_data_interval().min(), 'Summer', fontsize=24)
 ax_var.axvspan(23.5,32, facecolor='b', alpha=0.2, label='Autumn')
-ax_var.text(26.5, ax_var.yaxis.get_data_interval().min(), 'Autumn', fontsize=14)
+ax_var.text(26.5, ax_var.yaxis.get_data_interval().min(), 'Autumn', fontsize=24)
 fig = ax_var.get_figure()
 fig.savefig(data_folder / str('fig/' + project +'_variability.png'))
 
@@ -471,11 +477,11 @@ for i in ic_reduced_2030:
 
 # data_ic = np.c_[ic_reduced_2030.to_array().values, res_tot_IC.x, res_tot_P.x, res_S1.x]
 data_ic = np.c_[ic_reduced.to_array().values, ic_reduced_2030.to_array().values, res_S1.x]
-df_ic = pd.DataFrame((data_ic), columns=['Installed PV capacity 2019', 'Installed PV capacity planned for 2030', 'Installed PV capacity and production (2030) as constraint (S1)'], index=country)
+df_ic = pd.DataFrame((data_ic), columns=[IC_2019_name, IC_ref_name, IC_calc_name], index=country)
 df_ic.to_excel(data_folder / str(project + 'new-ic.xlsx'))
 #ic minus lower bound
-df_ic_lb = round((df_ic[['Installed PV capacity planned for 2030', 'Installed PV capacity and production (2030) as constraint (S1)']].transpose() -lb).transpose())
-df_ic_ub = round((df_ic[['Installed PV capacity planned for 2030', 'Installed PV capacity and production (2030) as constraint (S1)']].transpose() -ub).transpose())
+df_ic_lb = round((df_ic[[IC_ref_name, IC_calc_name]].transpose() -lb).transpose())
+df_ic_ub = round((df_ic[[IC_ref_name, IC_calc_name]].transpose() -ub).transpose())
 
 
 #Read shapefile using Geopandas
@@ -503,7 +509,7 @@ for i in range(0, len(df_ic_lb.transpose())):
 f, ax = plt.subplots(
     ncols=3,
     nrows=1,
-    figsize=(22, 6),
+    figsize=(24, 8),
 )
 
 cmap = mpl.cm.get_cmap("Reds")
@@ -539,7 +545,7 @@ for i in ic_plotting:
                                   vmax=vmax, vmin=vmin,
                                   )
         if c==2:
-            for cc in (df_ic_ub['Installed PV capacity and production (2030) as constraint (S1)'].where(df_ic_ub['Installed PV capacity and production (2030) as constraint (S1)']>-1)).dropna().index:
+            for cc in (df_ic_ub[IC_calc_name].where(df_ic_ub[IC_calc_name]>-1)).dropna().index:
                 i.where(i.country_code==cc).plot(ax=ax[c],column=i.columns[3], cmap=cmap, edgecolor='black',linewidth=0.1,
                                   vmax=vmax, vmin=vmin,hatch='///')
         
@@ -555,7 +561,7 @@ for i in ic_plotting:
         c = c +1
 # Move legend to rigt place
 leg1 = ax[0].get_figure().get_axes()[3]
-leg1.set_position([0.37,0.00,0.3,0.1])
+leg1.set_position([0.37,0.1,0.3,0.1])
 leg1.set_xlabel('Total installed PV capacity (in GW)', fontsize=14)
 #move subplot
 pos2 = [ax[0].get_position().x0, ax[1].get_position().y0, ax[1].get_position().width, ax[1].get_position().height]
@@ -609,7 +615,7 @@ for i in ic_lb_plotting:
                                   vmax=vmax, vmin=vmin,
                                   )
         
-        for cc in (df_ic_ub['Installed PV capacity and production (2030) as constraint (S1)'].where(df_ic_ub['Installed PV capacity and production (2030) as constraint (S1)']>-1)).dropna().index:
+        for cc in (df_ic_ub[IC_calc_name].where(df_ic_ub[IC_calc_name]>-1)).dropna().index:
             i.where(i.country_code==cc).plot(ax=ax[c],column=i.columns[3], cmap=cmap, edgecolor='black',linewidth=0.1,
                               vmax=vmax, vmin=vmin,hatch='///')
         

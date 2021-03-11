@@ -91,6 +91,7 @@ c = wr.wr.max().values+1
 
 #Create subplots and colorbar for wr
 cmap = mpl.cm.get_cmap("RdBu_r")
+csfont = {'fontname':'Times New Roman'}
 plt.close("all")
 f, ax = plt.subplots(
     ncols=c,
@@ -114,12 +115,14 @@ for i in range(0,wr.wr.max().values+1):
     if i != 0:
 
         #standard anomalie height plot
-
-        title= 'WR' + str(i) + ' ' +  str(np.round(frequency * 100, decimals=1)) + "%"
+        if i==wr.wr.max().values:
+            title= 'no regime ' +  str(np.round(frequency * 100, decimals=1)) + "%"
+        else:
+            title= 'WR' + str(i) + ' ' +  str(np.round(frequency * 100, decimals=1)) + "%"
         ax[0, i].coastlines()
         ax[0, i].set_global()
         mean_wr_std_ano.plot.imshow(ax=ax[0,i], cmap=cmap, transform=ccrs.PlateCarree(), add_colorbar=False)
-        ax[0, i].set_title(title, fontsize=16)
+        ax[0, i].set_title(title, fontsize=16, **csfont)
         
         
         #Plot CF
@@ -131,8 +134,7 @@ for i in range(0,wr.wr.max().values+1):
                                       legend=False, 
                                       )
             #add title to the map
-            ax[s,i].set_title('CF during WR'+str(i) + ' ' + str(a), fontdict= 
-                        {'fontsize':15})
+            ax[s,i].set_title('CF during WR'+str(i) + ' ' + str(a), fontsize=16, **csfont)
             #remove axes
             ax[s,i].set_axis_off()
       
@@ -160,7 +162,7 @@ for i in range(0,wr.wr.max().values+1):
         con = mean_wr_std_ano.plot.imshow(ax=ax[0,i],  cmap=cmap, transform=ccrs.PlateCarree(), add_colorbar=False) 
         cb = plt.colorbar(con, cax=cbar_ax, orientation='horizontal')
         cb.set_label(label='Standardized anomalies of geoptential height at 500hPa [unitless]',size=16,fontfamily='times new roman')
-        ax[0, i].set_title(title, fontsize=16) 
+        ax[0, i].set_title(title, fontsize=16, **csfont) 
         
         
         
@@ -173,13 +175,12 @@ for i in range(0,wr.wr.max().values+1):
                 cf_plotting[i].dropna().plot(ax = ax[s,i], column=a, cmap=cmap,
                                           vmax=vmax_cf, vmin=vmin_cf,
                                           legend=True, 
-                                          legend_kwds={'label': "Capacity factor anomaly",
+                                          legend_kwds={'label': "Capacity factor anomaly [unitless]",
                                           'orientation': "horizontal",}
                                                                           
                                           )
                 #add title to the map
-                ax[s,i].set_title('CF during WR'+str(i) +' ' + str(a), fontdict= 
-                            {'fontsize':15})
+                ax[s,i].set_title('CF during WR'+str(i) +' ' + str(a), fontsize=16, **csfont)
                 #remove axes
                 ax[s,i].set_axis_off()
           
@@ -195,8 +196,7 @@ for i in range(0,wr.wr.max().values+1):
                                           legend=False, 
                                           )
                 #add title to the map
-                ax[s,i].set_title('CF during WR'+str(i) + ' ' + str(a), fontdict= 
-                            {'fontsize':15})
+                ax[s,i].set_title('CF during WR'+str(i) + ' ' + str(a), fontsize=16, **csfont)
                 #remove axes
                 ax[s,i].set_axis_off()
           
@@ -211,6 +211,7 @@ for i in range(0,wr.wr.max().values+1):
 # Move CF legend to rigt place
 leg = ax[1,i].get_figure().get_axes()[14]
 leg.set_position([0.3,0.1,0.4,0.02])
+leg.set_xlabel("Capacity factor anomaly [unitless]", fontsize=16, **csfont)
 #move subplot
 pos1 = ax[5,0].get_position()
 pos2 = [ax[4,0].get_position().x0, ax[5,1].get_position().y0, ax[5,1].get_position().width, ax[5,1].get_position().height]
@@ -227,6 +228,6 @@ ax[5,0].set_position(pos2)
 #¶plt.subplots_adjust(left=0.05, right=0.92, bottom=0.25)
 
 plt.suptitle("Mean weather regime fields (standardized anomalies) and its country specific capacity factor anomalie", fontsize=20)
-plt.savefig("../data/fig/cf_ano_and_wr_plot_lowpass0-1_v2.png")
+plt.savefig("../data/fig/cf_ano_and_wr_plot_lowpass0-1_v3.png")
 
 

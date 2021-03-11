@@ -503,7 +503,7 @@ for i in range(0, len(df_ic_lb.transpose())):
 f, ax = plt.subplots(
     ncols=3,
     nrows=1,
-    figsize=(22, 6),
+    figsize=(24, 8),
 )
 
 cmap = mpl.cm.get_cmap("Reds")
@@ -555,7 +555,7 @@ for i in ic_plotting:
         c = c +1
 # Move legend to rigt place
 leg1 = ax[0].get_figure().get_axes()[3]
-leg1.set_position([0.37,0.00,0.3,0.1])
+leg1.set_position([0.37,0.1,0.3,0.1])
 leg1.set_xlabel('Total installed PV capacity (in GW)', fontsize=14)
 #move subplot
 pos2 = [ax[0].get_position().x0, ax[1].get_position().y0, ax[1].get_position().width, ax[1].get_position().height]

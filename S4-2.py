@@ -155,7 +155,7 @@ last_value = country_load_year.notna()[::-1].idxmax()
 for i in country_load_year:
     load[i] = country_load_year[i][last_value[i]]
 
-ic_min_load = (load.drop_vars('UA')/ (365*24)) / cf *0.3 
+ic_min_load = (load.drop_vars('UA')/ (365*24)) / cf *0.4
 
 
 ######################END CREATE DATASET#######################################   
@@ -170,7 +170,7 @@ in order to cover 100% of its electricity needs by renewable energy.
 """     
 
 #Define project name which is used for filesaving
-project = 'Scenario_4-3'
+project = 'Scenario_4-2-40'
 var_2019 = 'Variability with installed PV capacity 2019'
 var_ref = 'Variability with interpolated installed PV capacity (2050)' #'Variability with installed PV capacity planned for 2030'
 var_calc = 'Variability with minimal inland PV production as constraint (S4)'
@@ -209,7 +209,7 @@ A_tot_IC = np.append(A_all, [np.ones(A_all.shape[1])], 0)
 
 
 #IC 2030
-target_IC = 891000 #ic_reduced_2030.to_array().sum()
+target_IC = 1940000#891000 #ic_reduced_2030.to_array().sum()
 b_tot_IC = np.append(b, target_IC)      
 ic_reduced_2050 = ic_reduced/ic_reduced.to_array().sum()*target_IC
 
@@ -537,7 +537,7 @@ for i in range(0, len(df_ic_lb.transpose())):
 f, ax = plt.subplots(
     ncols=3,
     nrows=1,
-    figsize=(22, 6),
+    figsize=(24, 8),
 )
 
 cmap = mpl.cm.get_cmap("Reds")
@@ -589,7 +589,7 @@ for i in ic_plotting:
         c = c +1
 # Move legend to rigt place
 leg1 = ax[0].get_figure().get_axes()[3]
-leg1.set_position([0.37,0.00,0.3,0.1])
+leg1.set_position([0.37,0.1,0.3,0.1])
 leg1.set_xlabel('Total installed PV capacity (in GW)', fontsize=14)
 #move subplot
 pos2 = [ax[0].get_position().x0, ax[1].get_position().y0, ax[1].get_position().width, ax[1].get_position().height]

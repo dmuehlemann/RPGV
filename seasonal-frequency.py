@@ -53,6 +53,9 @@ for i in z_all_std_ano.time.groupby('time.month').count().month.values:
     
 for i in range(0,wr.wr.max().values+1):
     month_frequency = month_frequency.rename(index={i: 'WR'+str(i)})    
+    
+    
+month_frequency = month_frequency.rename(index={'WR7':'no regime'})
 
 ######################Plot results#################
 
@@ -68,7 +71,7 @@ handles.reverse()
 labels.reverse()
 ax.legend(handles, labels, bbox_to_anchor=(1, 1), labelspacing=4.3, frameon=False, fontsize=11)
 
-plt.savefig(fig_out)
+# plt.savefig(fig_out)
 
 
 

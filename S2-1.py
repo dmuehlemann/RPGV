@@ -160,10 +160,10 @@ in order to cover 100% of its electricity needs by renewable energy.
 project = 'Scenario_2-1'
 var_2019 = 'Variability with installed PV capacity 2019'
 var_ref = 'Variability with interpolated installed PV capacity (2050)' #'Variability with installed PV capacity planned for 2030'
-var_calc = 'Variability with estimated installed PV capacity as constraint (S2: IRENA 2050)'
+var_calc = 'Variability with estimated installed PV capacity as constraint (S2: 0.9TW)'
 IC_2019_name = 'Installed PV capacity 2019'
 IC_ref_name = 'Interpolated installed PV capacity (2050)'
-IC_calc_name = 'Estimated installed PV capacity as constraint (S2: IRENA 2050)'
+IC_calc_name = 'Estimated installed PV capacity as constraint (S2: 0.9TW)'
 
 
                      
@@ -362,6 +362,10 @@ tot_var_std = np.array([[var_winter.std(axis=0)[0], var_spring.std(axis=0)[0], v
                         [var_winter.std(axis=0)[1], var_spring.std(axis=0)[1] ,var_summer.std(axis=0)[1], var_autumn.std(axis=0)[1], var_all.std(axis=0)[1]], 
                         [var_winter.std(axis=0)[2], var_spring.std(axis=0)[2] ,var_summer.std(axis=0)[2], var_autumn.std(axis=0)[2], var_all.std(axis=0)[2]]])
 
+tot_var_fre_std = np.array([[var_winter_fre.std(axis=0)[0], var_spring_fre.std(axis=0)[0], var_summer_fre.std(axis=0)[0], var_autumn_fre.std(axis=0)[0], var_all_fre.std(axis=0)[0]],
+                        [var_winter_fre.std(axis=0)[1], var_spring_fre.std(axis=0)[1] ,var_summer_fre.std(axis=0)[1], var_autumn_fre.std(axis=0)[1], var_all_fre.std(axis=0)[1]], 
+                        [var_winter_fre.std(axis=0)[2], var_spring_fre.std(axis=0)[2] ,var_summer_fre.std(axis=0)[2], var_autumn_fre.std(axis=0)[2], var_all_fre.std(axis=0)[2]]])
+
 
 
 
@@ -511,7 +515,7 @@ for i in range(0, len(df_ic_lb.transpose())):
 f, ax = plt.subplots(
     ncols=3,
     nrows=1,
-    figsize=(22, 6),
+    figsize=(24, 8),
 )
 
 cmap = mpl.cm.get_cmap("Reds")
@@ -563,7 +567,7 @@ for i in ic_plotting:
         c = c +1
 # Move legend to rigt place
 leg1 = ax[0].get_figure().get_axes()[3]
-leg1.set_position([0.37,0.00,0.3,0.1])
+leg1.set_position([0.37,0.1,0.3,0.1])
 leg1.set_xlabel('Total installed PV capacity (in GW)', fontsize=14)
 #move subplot
 pos2 = [ax[0].get_position().x0, ax[1].get_position().y0, ax[1].get_position().width, ax[1].get_position().height]

@@ -46,6 +46,13 @@ ninja = ninja.rename_vars({'GB':'UK'})
 # ninja_tot = []
 ninja_season= []
 ##calculate delata CF for each WR
+
+mean_day = ninja.drop('wr').resample(time='1D').mean()
+mean_day_std = ninja.drop('wr').resample(time='1D').std()
+
+mean_season_d = mean_day.groupby('time.season').mean()
+mean_season_d_std = mean_day.groupby('time.season').std()
+
 mean_season = ninja.drop('wr').groupby('time.season').mean()
 for i in range(0, int(ninja.wr.max()+1)):
     # ninja_tot.append(ninja.drop('wr').where(ninja.wr==i, drop=True).mean())# - ninja.drop('wr').mean())/ninja.drop('wr').mean())
@@ -53,10 +60,18 @@ for i in range(0, int(ninja.wr.max()+1)):
                           - mean_season \
                           #/ ninja.drop('wr').groupby('time.season').mean()
                           )
-a=0        
-for i in ninja_season:
-    file = data_folder / str('ninja_season_wr'+str(a)+'.nc')
-    i.to_netcdf(file)
-    a = a +1
-file_mean = data_folder / str('ninja_season_mean.nc')    
-mean_season.to_netcdf(file_mean)
+for i in range(0, int(ninja.wr.max()+1)):
+    # ninja_tot.append(ninja.drop('wr').where(ninja.wr==i, drop=True).mean())# - ninja.drop('wr').mean())/ninja.drop('wr').mean())
+    ninja_season.append(ninja.drop('wr').where(ninja.wr==i, drop=True).groupby('time.season').std() \
+                          - mean_season \
+                          #/ ninja.drop('wr').groupby('time.season').mean()
+                          )        
+        
+
+# a=0        
+# for i in ninja_season:
+#     file = data_folder / str('ninja_season_wr'+str(a)+'.nc')
+#     i.to_netcdf(file)
+#     a = a +1
+# file_mean = data_folder / str('ninja_season_mean.nc')    
+# mean_season.to_netcdf(file_mean)
