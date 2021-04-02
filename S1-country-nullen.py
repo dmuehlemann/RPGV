@@ -157,7 +157,7 @@ in order to cover 100% of its electricity needs by renewable energy.
 """     
 
 #Define project name which is used for filesaving
-project = 'country-boundary/optimization_2030_country-boundary-UK-NO-IE-FI'
+project = 'country-boundary/optimization_2030_country-boundary-GR-BG-RO-RS-IT'
 # project = 'country-boundary/optimization_2030_country-boundary-GR-BG-RO-RS-IT-ES-PT-AL-MK-HU-BA-HR-AU-CZ-PL'
 var_2019 = 'Variability with installed PV capacity 2019'
 var_ref = 'Variability with installed PV capacity planned for 2030' #'Variability with installed PV capacity planned for 2030'
@@ -170,13 +170,15 @@ IC_calc_name = 'Installed PV capacity with PV power production (2030) as constra
 lb = ic_reduced.to_array().values
 
 #greece 0
-ic_reduced_pot.UK.values = ic_reduced.UK.values+0.0000000001
-ic_reduced_pot.NO.values = ic_reduced.NO.values+0.0000000001
-ic_reduced_pot.IE.values = ic_reduced.IE.values+0.0000000001
-ic_reduced_pot.FI.values = ic_reduced.FI.values+0.0000000001
-# ic_reduced_pot.RO.values = ic_reduced.RO.values+0.0000000001
-# ic_reduced_pot.RS.values = ic_reduced.RS.values+0.0000000001
-# ic_reduced_pot.IT.values = ic_reduced.IT.values+0.0000000001
+ic_reduced_pot.GR.values = ic_reduced.GR.values+0.0000000001
+ic_reduced_pot.BG.values = ic_reduced.BG.values+0.0000000001
+# ic_reduced_pot.UK.values = ic_reduced.UK.values+0.0000000001
+# ic_reduced_pot.NO.values = ic_reduced.NO.values+0.0000000001
+# ic_reduced_pot.IE.values = ic_reduced.IE.values+0.0000000001
+# ic_reduced_pot.FI.values = ic_reduced.FI.values+0.0000000001
+ic_reduced_pot.RO.values = ic_reduced.RO.values+0.0000000001
+ic_reduced_pot.RS.values = ic_reduced.RS.values+0.0000000001
+ic_reduced_pot.IT.values = ic_reduced.IT.values+0.0000000001
 # ic_reduced_pot.ES.values = ic_reduced.ES.values+0.0000000001
 # ic_reduced_pot.PT.values = ic_reduced.PT.values+0.0000000001
 # ic_reduced_pot.AL.values = ic_reduced.AL.values+0.0000000001
@@ -469,7 +471,7 @@ ax_tot_var.axvspan(2.5,3.5, facecolor='b', alpha=0.2, label='Autumn')
 ax_tot_var.axvspan(3.5,4.5, facecolor='k', alpha=0.2, label='total')
 
 fig_tot_var = ax_tot_var.get_figure()
-fig_tot_var.savefig(data_folder / str('fig/' + project +'_tot_variability.png'))
+# fig_tot_var.savefig(data_folder / str('fig/' + project +'_tot_variability.png'))
 
 #######END Plot total variability per season#######
 
@@ -489,7 +491,7 @@ ax_var.text(18.5, ax_var.yaxis.get_data_interval().min(), 'Summer', fontsize=24)
 ax_var.axvspan(23.5,32, facecolor='b', alpha=0.2, label='Autumn')
 ax_var.text(26.5, ax_var.yaxis.get_data_interval().min(), 'Autumn', fontsize=24)
 fig = ax_var.get_figure()
-fig.savefig(data_folder / str('fig/' + project +'_variability.png'))
+# fig.savefig(data_folder / str('fig/' + project +'_variability.png'))
 
 
 #Plot optimizied IC distribution
@@ -531,71 +533,71 @@ for i in range(0, len(df_ic_lb.transpose())):
     ic_lb_plotting.append(eu.merge(df_ic_lb.iloc[:,i]/1000, left_on = 'country_code', right_index=True))
 
 
-f, ax = plt.subplots(
-    ncols=3,
-    nrows=1,
-    figsize=(24, 8),
-)
+# f, ax = plt.subplots(
+#     ncols=3,
+#     nrows=1,
+#     figsize=(24, 8),
+# )
 
-cmap = mpl.cm.get_cmap("Reds")
-cmap.set_under(color='white')
-vmin = 0.01
-vmax = 100
+# cmap = mpl.cm.get_cmap("Reds")
+# cmap.set_under(color='white')
+# vmin = 0.01
+# vmax = 100
 
-#Plot absolut data
-c=0
-for i in ic_plotting:
-    if c == 0:
-        # divider = make_axes_locatable(ax[0,c])
-        # cax = divider.append_axes("bottom", size="5%", pad=0.4)
-        i.dropna().plot(ax=ax[c], column=i.columns[3], cmap=cmap,edgecolor='black',
-                                  vmax=vmax, vmin=vmin,
-                                  legend=True, 
-                                  legend_kwds={'orientation': "horizontal", }
+# #Plot absolut data
+# c=0
+# for i in ic_plotting:
+#     if c == 0:
+#         # divider = make_axes_locatable(ax[0,c])
+#         # cax = divider.append_axes("bottom", size="5%", pad=0.4)
+#         i.dropna().plot(ax=ax[c], column=i.columns[3], cmap=cmap,edgecolor='black',
+#                                   vmax=vmax, vmin=vmin,
+#                                   legend=True, 
+#                                   legend_kwds={'orientation': "horizontal", }
                                                                   
-                                  )
+#                                   )
         
-        ax[c].set_xlim(left=-13, right=35)
-        ax[c].set_ylim(bottom=34, top=70) 
-        ax[c].set_title(r"$\bf{" + i.columns[3].replace(' ', '~') + "}$" +
-                        '\n Total installed PV capacity (GW): ' + str((tot_IC[c]/1000).round(1)) + 
-                        '\n Total mean PV production (GW): ' + str((tot_P[c].values/1000).round(1)) +
-                        '\n Total mean variability (GW): ' + str((tot_var[c]/1000).round(1))+ 
-                        '\n Total max variability (GW): ' + str((max[c+4*(c+1)]).round(1)), 
-                        fontsize=14)
-        ax[c].set_axis_off()
-        c = c +1
-    else:
-        i.dropna().plot(ax=ax[c], column=i.columns[3], cmap=cmap,edgecolor='black',
-                                  vmax=vmax, vmin=vmin,
-                                  )
-        if c==2:
-            for cc in (df_ic_ub[IC_calc_name].where(df_ic_ub[IC_calc_name]>-1)).dropna().index:
-                i.where(i.country_code==cc).plot(ax=ax[c],column=i.columns[3], cmap=cmap, edgecolor='black',linewidth=0.1,
-                                  vmax=vmax, vmin=vmin,hatch='///')
+#         ax[c].set_xlim(left=-13, right=35)
+#         ax[c].set_ylim(bottom=34, top=70) 
+#         ax[c].set_title(r"$\bf{" + i.columns[3].replace(' ', '~') + "}$" +
+#                         '\n Total installed PV capacity (GW): ' + str((tot_IC[c]/1000).round(1)) + 
+#                         '\n Total mean PV production (GW): ' + str((tot_P[c].values/1000).round(1)) +
+#                         '\n Total mean variability (GW): ' + str((tot_var[c]/1000).round(1))+ 
+#                         '\n Total max variability (GW): ' + str((max[c+4*(c+1)]).round(1)), 
+#                         fontsize=24)
+#         ax[c].set_axis_off()
+#         c = c +1
+#     else:
+#         i.dropna().plot(ax=ax[c], column=i.columns[3], cmap=cmap,edgecolor='black',
+#                                   vmax=vmax, vmin=vmin,
+#                                   )
+#         if c==2:
+#             for cc in (df_ic_ub[IC_calc_name].where(df_ic_ub[IC_calc_name]>-1)).dropna().index:
+#                 i.where(i.country_code==cc).plot(ax=ax[c],column=i.columns[3], cmap=cmap, edgecolor='black',linewidth=0.1,
+#                                   vmax=vmax, vmin=vmin,hatch='///')
         
-        ax[c].set_xlim(left=-13, right=35)
-        ax[c].set_ylim(bottom=34, top=70) 
-        ax[c].set_title(r"$\bf{" + i.columns[3].replace(' ', '~') + "}$" +
-                        '\n Total installed PV capacity (GW): ' + str((tot_IC[c]/1000).round(1)) + 
-                        '\n Total mean PV production (GW): ' + str((tot_P[c].values/1000).round(1)) +
-                        '\n Total mean variability (GW): ' + str((tot_var[c]/1000).round(1))+
-                        '\n Total max variability (GW): ' + str((max[c+4*(c+1)]).round(1)), 
-                        fontsize=14)
-        ax[c].set_axis_off()
-        c = c +1
-# Move legend to rigt place
-leg1 = ax[0].get_figure().get_axes()[3]
-leg1.set_position([0.37,0.1,0.3,0.1])
-leg1.set_xlabel('Total installed PV capacity (in GW)', fontsize=14)
-#move subplot
-pos2 = [ax[0].get_position().x0, ax[1].get_position().y0, ax[1].get_position().width, ax[1].get_position().height]
-ax[0].set_position(pos2)
-pos4 = [ax[0].get_position().x0, ax[1].get_position().y0, ax[1].get_position().width, ax[1].get_position().height]
-ax[0].set_position(pos4)
+#         ax[c].set_xlim(left=-13, right=35)
+#         ax[c].set_ylim(bottom=34, top=70) 
+#         ax[c].set_title(r"$\bf{" + i.columns[3].replace(' ', '~') + "}$" +
+#                         '\n Total installed PV capacity (GW): ' + str((tot_IC[c]/1000).round(1)) + 
+#                         '\n Total mean PV production (GW): ' + str((tot_P[c].values/1000).round(1)) +
+#                         '\n Total mean variability (GW): ' + str((tot_var[c]/1000).round(1))+
+#                         '\n Total max variability (GW): ' + str((max[c+4*(c+1)]).round(1)), 
+#                         fontsize=24)
+#         ax[c].set_axis_off()
+#         c = c +1
+# # Move legend to rigt place
+# leg1 = ax[0].get_figure().get_axes()[3]
+# leg1.set_position([0.37,0.1,0.3,0.1])
+# leg1.set_xlabel('Total installed PV capacity (in GW)', fontsize=24)
+# #move subplot
+# pos2 = [ax[0].get_position().x0, ax[1].get_position().y0, ax[1].get_position().width, ax[1].get_position().height]
+# ax[0].set_position(pos2)
+# pos4 = [ax[0].get_position().x0, ax[1].get_position().y0, ax[1].get_position().width, ax[1].get_position().height]
+# ax[0].set_position(pos4)
     
-# f.suptitle('Distribution of installed PV capacity', fontsize=30)
-f.savefig(data_folder / str('fig/' + project + '_ic-distribution_absolut.png'))
+# # f.suptitle('Distribution of installed PV capacity', fontsize=30)
+# f.savefig(data_folder / str('fig/' + project + '_ic-distribution_absolut.png'))
 
 
 
@@ -605,7 +607,7 @@ f.savefig(data_folder / str('fig/' + project + '_ic-distribution_absolut.png'))
 f, ax = plt.subplots(
     ncols=2,
     nrows=1,
-    figsize=(20, 10),
+    figsize=(30, 15),
 )
 
 cmap = mpl.cm.get_cmap("Reds")
@@ -632,7 +634,7 @@ for i in ic_lb_plotting:
                         '\n Additional mean PV production (GW): ' + str(((tot_P[c+1]-tot_P[0]).values/1000).round(1)) +
                         '\n Total mean variability (GW): ' + str((tot_var[c+1]/1000).round(1)) +
                         '\n Total max variability (GW): ' + str((max[c+4+1+4*(c+1)]).round(1)), 
-                        fontsize=14)
+                        fontsize=24)
         ax[c].set_axis_off()
         c = c +1
     else:
@@ -651,7 +653,7 @@ for i in ic_lb_plotting:
                         '\n Additional mean PV production (GW): ' + str(((tot_P[c+1]-tot_P[0]).values/1000).round(1)) +
                         '\n Total mean variability (GW): ' + str((tot_var[c+1]/1000).round(1)) +
                         '\n Total max variability (GW): ' + str((max[c+4+1+4*(c+1)]).round(1)), 
-                        fontsize=14)
+                        fontsize=24)
 
         ax[c].set_axis_off()
         c = c +1
@@ -661,7 +663,7 @@ for i in ic_lb_plotting:
 # Move legend to rigt place
 leg1 = ax[0].get_figure().get_axes()[2]
 leg1.set_position([0.37,0.1,0.3,0.1])
-leg1.set_xlabel('Additional installed PV capacity (in GW)', fontsize=14)
+leg1.set_xlabel('Additional installed PV capacity (in GW)', fontsize=24)
 
 
 #move subplot

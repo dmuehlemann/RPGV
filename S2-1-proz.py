@@ -159,11 +159,11 @@ in order to cover 100% of its electricity needs by renewable energy.
 #Define project name which is used for filesaving
 project = 'Scenario_2-1-proz'
 var_2019 = 'Variability with installed PV capacity 2019'
-var_ref = 'Variability with interpolated installed PV capacity (2050)' #'Variability with installed PV capacity planned for 2030'
-var_calc = 'Variability with estimated installed PV capacity as constraint (S2: 0.9TW)'
+var_ref = 'Variability with estimated installed PV capacity for 2050 (0.9TW)' #'Variability with installed PV capacity planned for 2030'
+var_calc = 'Variability with estimated PV power production for 2050 as constraint (S2: 0.9TW)'
 IC_2019_name = 'Installed PV capacity 2019'
-IC_ref_name = 'Interpolated installed PV capacity (2050)'
-IC_calc_name = 'Estimated installed PV capacity as constraint (S2: 0.9TW)'
+IC_ref_name = 'Installed PV capacity 2050 (0.9TW)'
+IC_calc_name = 'Installed PV capacity of scenario 2 (0.9TW)'
 
 
                      
@@ -391,9 +391,9 @@ tot_IC.append(res_S2.x.sum())
 
 #######Plot total variability per season#######
 df_tot_var = pd.DataFrame([tot_var_winter/1000, tot_var_spring/1000, tot_var_summer/1000, tot_var_autumn/1000, tot_var/1000], columns=df_var.columns, index=['Winter', 'Spring', 'Summer', 'Autumn', 'Total'])
-ax_tot_var = df_tot_var.plot(kind='bar', figsize=(20,10), rot=0, fontsize=14) #yerr=tot_var_std/1000, error_kw=dict(capsize=4,)
-ax_tot_var.set_ylabel("Variability in GW", fontsize=14, fontfamily='times new roman')
-ax_tot_var.legend(loc=6, bbox_to_anchor=(0.0, 0.8), fontsize=12)
+ax_tot_var = df_tot_var.plot(kind='bar', figsize=(30,15), rot=0, fontsize=24) #yerr=tot_var_std/1000, error_kw=dict(capsize=4,)
+ax_tot_var.set_ylabel("Variability in GW", fontsize=24, fontfamily='times new roman')
+ax_tot_var.legend(loc=6, bbox_to_anchor=(0.0, 0.8), fontsize=24)
 
 # create a list for tmin and max
 s = 0
@@ -451,20 +451,20 @@ fig_tot_var.savefig(data_folder / str('fig/' + project +'_tot_variability.png'))
 #######END Plot total variability per season#######
 
 #Plot deviation per weather regime and season
-ax_var = (df_var/1000).plot(kind='bar', figsize=(20,10), fontsize=14)
+ax_var = (df_var/1000).plot(kind='bar', figsize=(30,15), fontsize=24)
 #with total Planned IC / power production for 2030 as constraint for every season
 # ax_var.set_title('Optimized IC distribution (with installed PV capacity planned for 2030)', fontsize=20, pad=20)
-ax_var.legend(loc=2, fontsize=12)
-ax_var.set_ylabel('Deviation of PV power production from the seasonal mean in GW', fontsize=14)
-ax_var.set_xlabel('Weather regimes', fontsize=14, labelpad=10)
+ax_var.legend(loc=2, fontsize=24)
+ax_var.set_ylabel('Deviation of PV power production from the seasonal mean in GW', fontsize=24)
+ax_var.set_xlabel('Weather regimes', fontsize=24, labelpad=10)
 ax_var.axvspan(0,7.5, facecolor='w', alpha=0.2, label='Winter')
-ax_var.text(2.5, ax_var.yaxis.get_data_interval().min(), 'Winter', fontsize=14)
+ax_var.text(2.5, ax_var.yaxis.get_data_interval().min(), 'Winter', fontsize=24)
 ax_var.axvspan(7.5,15.5, facecolor='g', alpha=0.2, label='Spring')
-ax_var.text(10.5, ax_var.yaxis.get_data_interval().min(), 'Spring', fontsize=14)
+ax_var.text(10.5, ax_var.yaxis.get_data_interval().min(), 'Spring', fontsize=24)
 ax_var.axvspan(15.5,23.5, facecolor='r', alpha=0.2, label='Summer')
-ax_var.text(18.5, ax_var.yaxis.get_data_interval().min(), 'Summer', fontsize=14)
+ax_var.text(18.5, ax_var.yaxis.get_data_interval().min(), 'Summer', fontsize=24)
 ax_var.axvspan(23.5,32, facecolor='b', alpha=0.2, label='Autumn')
-ax_var.text(26.5, ax_var.yaxis.get_data_interval().min(), 'Autumn', fontsize=14)
+ax_var.text(26.5, ax_var.yaxis.get_data_interval().min(), 'Autumn', fontsize=24)
 fig = ax_var.get_figure()
 fig.savefig(data_folder / str('fig/' + project +'_variability.png'))
 
@@ -511,7 +511,7 @@ for i in range(0, len(df_ic_lb.transpose())):
 f, ax = plt.subplots(
     ncols=3,
     nrows=1,
-    figsize=(24, 8),
+    figsize=(30, 12),
 )
 
 cmap = mpl.cm.get_cmap("Reds")
@@ -540,7 +540,7 @@ for i in ic_plotting:
                         '\n Total mean PV production (GW): ' + str((tot_P[c].values/1000).round(1)) +
                         '\n Total mean variability (GW): ' + str((tot_var[c]/1000).round(1))+ 
                         '\n Total max variability (GW): ' + str((max[c+4*(c+1)]).round(1)), 
-                        fontsize=14)
+                        fontsize=24)
         ax[c].set_axis_off()
         c = c +1
     else:
@@ -559,13 +559,13 @@ for i in ic_plotting:
                         '\n Total mean PV production (GW): ' + str((tot_P[c].values/1000).round(1)) +
                         '\n Total mean variability (GW): ' + str((tot_var[c]/1000).round(1))+
                         '\n Total max variability (GW): ' + str((max[c+4*(c+1)]).round(1)), 
-                        fontsize=14)
+                        fontsize=24)
         ax[c].set_axis_off()
         c = c +1
 # Move legend to rigt place
 leg1 = ax[0].get_figure().get_axes()[3]
 leg1.set_position([0.37,0.1,0.3,0.1])
-leg1.set_xlabel('Total installed PV capacity (in % from total)', fontsize=14)
+leg1.set_xlabel('Total installed PV capacity (in % from total)', fontsize=24)
 #move subplot
 pos2 = [ax[0].get_position().x0, ax[1].get_position().y0, ax[1].get_position().width, ax[1].get_position().height]
 ax[0].set_position(pos2)
@@ -583,7 +583,7 @@ f.savefig(data_folder / str('fig/' + project + '_ic-distribution_absolut.png'))
 f, ax = plt.subplots(
     ncols=2,
     nrows=1,
-    figsize=(20, 10),
+    figsize=(30, 15),
 )
 
 cmap = mpl.cm.get_cmap("Reds")
@@ -606,12 +606,12 @@ for i in ic_lb_plotting:
         
         ax[c].set_xlim(left=-13, right=35)
         ax[c].set_ylim(bottom=34, top=70) 
-        ax[c].set_title(r"$\bf{" + i.columns[3].replace(' ', '~') +'~(only~additional)' + "}$" +
+        ax[c].set_title(r"$\bf{" + i.columns[3].replace(' ', '~').replace('Installed', 'Additional~installed') + "}$" +
                         '\n Additional installed PV capacity (GW): ' + str(((tot_IC[c+1]-tot_IC[0])/1000).round(1)) + 
                         '\n Additional mean PV production (GW): ' + str(((tot_P[c+1]-tot_P[0]).values/1000).round(1)) +
                         '\n Total mean variability (GW): ' + str((tot_var[c+1]/1000).round(1)) +
                         '\n Total max variability (GW): ' + str((max[c+4+1+4*(c+1)]).round(1)), 
-                        fontsize=14)
+                        fontsize=24)
         ax[c].set_axis_off()
         c = c +1
     else:
@@ -625,12 +625,12 @@ for i in ic_lb_plotting:
         
         ax[c].set_xlim(left=-13, right=35)
         ax[c].set_ylim(bottom=34, top=70) 
-        ax[c].set_title(r"$\bf{" + i.columns[3].replace(' ', '~') +'~(only~additional)' + "}$" +
+        ax[c].set_title(r"$\bf{" + i.columns[3].replace(' ', '~').replace('Installed', 'Additional~installed') + "}$" + 
                        '\n Additional installed PV capacity (GW): ' + str(((tot_IC[c+1]-tot_IC[0])/1000).round(1)) + 
                         '\n Additional mean PV production (GW): ' + str(((tot_P[c+1]-tot_P[0]).values/1000).round(1)) +
                         '\n Total mean variability (GW): ' + str((tot_var[c+1]/1000).round(1)) +
                         '\n Total max variability (GW): ' + str((max[c+4+1+4*(c+1)]).round(1)), 
-                        fontsize=14)
+                        fontsize=24)
 
         ax[c].set_axis_off()
         c = c +1
@@ -640,7 +640,7 @@ for i in ic_lb_plotting:
 # Move legend to rigt place
 leg1 = ax[0].get_figure().get_axes()[2]
 leg1.set_position([0.37,0.1,0.3,0.1])
-leg1.set_xlabel('Additional installed PV capacity (in % from total)', fontsize=14)
+leg1.set_xlabel('Additional installed PV capacity (in % from total)', fontsize=24)
 
 
 #move subplot

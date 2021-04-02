@@ -163,7 +163,7 @@ var_ref = 'Variability with installed PV capacity planned for 2030' #'Variabilit
 var_calc = 'Variability with PV power production (2030) as constraint (S1)'
 IC_2019_name = 'Installed PV capacity 2019'
 IC_ref_name = 'Installed PV capacity planned for 2030'
-IC_calc_name = 'Installed PV capacity with PV power production (2030) as constraint (S1)'
+IC_calc_name = 'Installed PV capacity of scenario 1'
                      
 #Define lower and upper bound with already installed capacity   
 lb = ic_reduced.to_array().values
@@ -509,7 +509,7 @@ for i in range(0, len(df_ic_lb.transpose())):
 f, ax = plt.subplots(
     ncols=3,
     nrows=1,
-    figsize=(24, 8),
+    figsize=(30, 12),
 )
 
 cmap = mpl.cm.get_cmap("Reds")
@@ -537,7 +537,7 @@ for i in ic_plotting:
                         '\n Total mean PV production (GW): ' + str((tot_P[c].values/1000).round(1)) +
                         '\n Total mean variability (GW): ' + str((tot_var[c]/1000).round(1))+ 
                         '\n Total max variability (GW): ' + str((max[c+4*(c+1)]).round(1)), 
-                        fontsize=14)
+                        fontsize=24)
         ax[c].set_axis_off()
         c = c +1
     else:
@@ -556,13 +556,13 @@ for i in ic_plotting:
                         '\n Total mean PV production (GW): ' + str((tot_P[c].values/1000).round(1)) +
                         '\n Total mean variability (GW): ' + str((tot_var[c]/1000).round(1))+
                         '\n Total max variability (GW): ' + str((max[c+4*(c+1)]).round(1)), 
-                        fontsize=14)
+                        fontsize=24)
         ax[c].set_axis_off()
         c = c +1
 # Move legend to rigt place
 leg1 = ax[0].get_figure().get_axes()[3]
 leg1.set_position([0.37,0.1,0.3,0.1])
-leg1.set_xlabel('Total installed PV capacity (in GW)', fontsize=14)
+leg1.set_xlabel('Total installed PV capacity (in GW)', fontsize=24)
 #move subplot
 pos2 = [ax[0].get_position().x0, ax[1].get_position().y0, ax[1].get_position().width, ax[1].get_position().height]
 ax[0].set_position(pos2)
@@ -580,7 +580,7 @@ f.savefig(data_folder / str('fig/' + project + '_ic-distribution_absolut.png'))
 f, ax = plt.subplots(
     ncols=2,
     nrows=1,
-    figsize=(20, 10),
+    figsize=(30, 15),
 )
 
 cmap = mpl.cm.get_cmap("Reds")
@@ -602,12 +602,12 @@ for i in ic_lb_plotting:
         
         ax[c].set_xlim(left=-13, right=35)
         ax[c].set_ylim(bottom=34, top=70) 
-        ax[c].set_title(r"$\bf{" + i.columns[3].replace(' ', '~') +'~(only~additional)' + "}$" +
+        ax[c].set_title(r"$\bf{" + i.columns[3].replace(' ', '~').replace('Installed', 'Additional~installed')  + "}$" +
                         '\n Additional installed PV capacity (GW): ' + str(((tot_IC[c+1]-tot_IC[0])/1000).round(1)) + 
                         '\n Additional mean PV production (GW): ' + str(((tot_P[c+1]-tot_P[0]).values/1000).round(1)) +
                         '\n Total mean variability (GW): ' + str((tot_var[c+1]/1000).round(1)) +
                         '\n Total max variability (GW): ' + str((max[c+4+1+4*(c+1)]).round(1)), 
-                        fontsize=14)
+                        fontsize=24)
         ax[c].set_axis_off()
         c = c +1
     else:
@@ -621,12 +621,12 @@ for i in ic_lb_plotting:
         
         ax[c].set_xlim(left=-13, right=35)
         ax[c].set_ylim(bottom=34, top=70) 
-        ax[c].set_title(r"$\bf{" + i.columns[3].replace(' ', '~') +'~(only~additional)' + "}$" +
+        ax[c].set_title(r"$\bf{" + i.columns[3].replace(' ', '~').replace('Installed', 'Additional~installed') + "}$" +
                        '\n Additional installed PV capacity (GW): ' + str(((tot_IC[c+1]-tot_IC[0])/1000).round(1)) + 
                         '\n Additional mean PV production (GW): ' + str(((tot_P[c+1]-tot_P[0]).values/1000).round(1)) +
                         '\n Total mean variability (GW): ' + str((tot_var[c+1]/1000).round(1)) +
                         '\n Total max variability (GW): ' + str((max[c+4+1+4*(c+1)]).round(1)), 
-                        fontsize=14)
+                        fontsize=24)
 
         ax[c].set_axis_off()
         c = c +1
@@ -636,7 +636,7 @@ for i in ic_lb_plotting:
 # Move legend to rigt place
 leg1 = ax[0].get_figure().get_axes()[2]
 leg1.set_position([0.37,0.1,0.3,0.1])
-leg1.set_xlabel('Additional installed PV capacity (in GW)', fontsize=14)
+leg1.set_xlabel('Additional installed PV capacity (in GW)', fontsize=24)
 
 
 #move subplot
