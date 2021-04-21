@@ -516,13 +516,13 @@ f, ax = plt.subplots(
 
 cmap = mpl.cm.get_cmap("Reds")
 cmap.set_under(color='white')
-vmin = 0.01
-vmax = 1
+vmin = 0
+vmax = 100
 
 #Plot absolut data
 c=0
 for i in ic_plotting:
-    i[i.columns[3]] = i[i.columns[3]] / i[i.columns[3]].sum()
+    i[i.columns[3]] = i[i.columns[3]] / i[i.columns[3]].sum()*100
     if c == 0:
         # divider = make_axes_locatable(ax[0,c])
         # cax = divider.append_axes("bottom", size="5%", pad=0.4)
@@ -588,12 +588,12 @@ f, ax = plt.subplots(
 
 cmap = mpl.cm.get_cmap("Reds")
 cmap.set_under(color='white')
-vmin = 0.01
-vmax = 1
+vmin = 0
+vmax = 100
 
 c=0
 for i in ic_lb_plotting:
-    i[i.columns[3]] = i[i.columns[3]] / i[i.columns[3]].sum()
+    i[i.columns[3]] = i[i.columns[3]] / i[i.columns[3]].sum()*100
     if c == 0:
         # divider = make_axes_locatable(ax[1,c])
         # cax = divider.append_axes("bottom", size="5%", pad=0.4)
@@ -641,6 +641,8 @@ for i in ic_lb_plotting:
 leg1 = ax[0].get_figure().get_axes()[2]
 leg1.set_position([0.37,0.1,0.3,0.1])
 leg1.set_xlabel('Additional installed PV capacity (in % from total)', fontsize=24)
+ticklabs = leg1.get_xticklabels()
+leg1.set_xticklabels(ticklabs, fontsize=24)
 
 
 #move subplot

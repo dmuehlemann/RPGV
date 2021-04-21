@@ -82,7 +82,7 @@ for i in range(0,wr.wr.max().values+1):
                                   # cbar_kwargs={'label': "Standardized anomalies of geoptential height at 500hPa","orientation": "horizontal"}, 
                                   # cbar_ax=cbar_ax)
         cb = plt.colorbar(con, cax=cbar_ax, orientation='horizontal')
-        cb.set_label(label='Standardized anomalies of geoptential height at 500 hPa [unitless]',size=16,fontfamily='times new roman')
+        cb.set_label(label='Standardized anomalies of geopotential height at 500 hPa [unitless]',size=16,fontfamily='times new roman')
         ax[0].set_title(title, fontsize=20, **csfont)
         
                
