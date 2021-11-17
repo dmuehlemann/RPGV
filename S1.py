@@ -444,7 +444,7 @@ ax_tot_var.axvspan(2.5,3.5, facecolor='b', alpha=0.2, label='Autumn')
 ax_tot_var.axvspan(3.5,4.5, facecolor='k', alpha=0.2, label='total')
 
 fig_tot_var = ax_tot_var.get_figure()
-fig_tot_var.savefig(data_folder / str('fig/' + project +'_tot_variability.png'))
+fig_tot_var.savefig(data_folder / str('fig/' + project +'_tot_variability.tiff'))
 
 #######END Plot total variability per season#######
 
@@ -464,7 +464,7 @@ ax_var.text(18.5, ax_var.yaxis.get_data_interval().min(), 'Summer', fontsize=24)
 ax_var.axvspan(23.5,32, facecolor='b', alpha=0.2, label='Autumn')
 ax_var.text(26.5, ax_var.yaxis.get_data_interval().min(), 'Autumn', fontsize=24)
 fig = ax_var.get_figure()
-fig.savefig(data_folder / str('fig/' + project +'_variability.png'))
+fig.savefig(data_folder / str('fig/' + project +'_variability.tiff'))
 
 
 #Plot optimizied IC distribution
@@ -572,7 +572,7 @@ pos4 = [ax[0].get_position().x0, ax[1].get_position().y0, ax[1].get_position().w
 ax[0].set_position(pos4)
     
 # f.suptitle('Distribution of installed PV capacity', fontsize=30)
-f.savefig(data_folder / str('fig/' + project + '_ic-distribution_absolut.png'))
+f.savefig(data_folder / str('fig/' + project + '_ic-distribution_absolut.tiff'))
 
 
 
@@ -582,7 +582,7 @@ f.savefig(data_folder / str('fig/' + project + '_ic-distribution_absolut.png'))
 f, ax = plt.subplots(
     ncols=2,
     nrows=1,
-    figsize=(60, 30),
+    figsize=(7.48, 3.35),
 )
 
 cmap = mpl.cm.get_cmap("Reds")
@@ -595,7 +595,7 @@ for i in ic_lb_plotting:
     if c == 0:
         # divider = make_axes_locatable(ax[1,c])
         # cax = divider.append_axes("bottom", size="5%", pad=0.4)
-        ma = i.dropna().plot(ax=ax[c], column=i.columns[3], cmap=cmap, edgecolor='black',
+        ma = i.dropna().plot(ax=ax[c], column=i.columns[3], cmap=cmap, edgecolor='black', linewidth=0.1,
                                   vmax=vmax, vmin=vmin,
                                   legend=True,
                                   legend_kwds={'orientation': "horizontal",}
@@ -609,17 +609,18 @@ for i in ic_lb_plotting:
                         '\n Additional mean PV production (GW): ' + str(((tot_P[c+1]-tot_P[0]).values/1000).round(1)) +
                         '\n Total mean variability (GW): ' + str((tot_var[c+1]/1000).round(1)) +
                         '\n Total max variability (GW): ' + str((max[c+4+1+4*(c+1)]).round(1)), 
-                        fontsize=55)
+                        fontsize=7)
         ax[c].set_axis_off()
         c = c +1
     else:
-        ma = i.dropna().plot(ax=ax[c], column=i.columns[3], cmap=cmap, edgecolor='black',
+        ma = i.dropna().plot(ax=ax[c], column=i.columns[3], cmap=cmap, edgecolor='black', linewidth=0.1,
                                   vmax=vmax, vmin=vmin,
                                   )
         
         for cc in (df_ic_ub[IC_calc_name].where(df_ic_ub[IC_calc_name]>-1)).dropna().index:
+            plt.rcParams['hatch.linewidth'] = 0.5
             i.where(i.country_code==cc).plot(ax=ax[c],column=i.columns[3], cmap=cmap, edgecolor='black',linewidth=0.1,
-                              vmax=vmax, vmin=vmin,hatch='/')
+                              vmax=vmax, vmin=vmin,hatch='/////')
         
         ax[c].set_xlim(left=-13, right=35)
         ax[c].set_ylim(bottom=34, top=70) 
@@ -628,7 +629,7 @@ for i in ic_lb_plotting:
                         '\n Additional mean PV production (GW): ' + str(((tot_P[c+1]-tot_P[0]).values/1000).round(1)) +
                         '\n Total mean variability (GW): ' + str((tot_var[c+1]/1000).round(1)) +
                         '\n Total max variability (GW): ' + str((max[c+4+1+4*(c+1)]).round(1)), 
-                        fontsize=55)
+                        fontsize=7)
 
         ax[c].set_axis_off()
         c = c +1
@@ -638,9 +639,9 @@ for i in ic_lb_plotting:
 # Move legend to rigt place
 leg1 = ax[0].get_figure().get_axes()[2]
 leg1.set_position([0.37,0.1,0.3,0.1])
-leg1.set_xlabel('Additional installed PV capacity (in GW)', fontsize=55)
+leg1.set_xlabel('Additional installed PV capacity (in GW)', fontsize=7)
 ticklabs = leg1.get_xticklabels()
-leg1.set_xticklabels(ticklabs, fontsize=55)
+leg1.set_xticklabels(ticklabs, fontsize=7)
 
 
 #move subplot
@@ -650,5 +651,4 @@ pos4 = [ax[0].get_position().x0, ax[1].get_position().y0, ax[1].get_position().w
 ax[0].set_position(pos4)
     
 # f.suptitle('Distribution of installed PV capacity', fontsize=30)
-f.savefig(data_folder / str('fig/' + project + '_ic-distribution_additional.png'))
-
+f.savefig(data_folder / str('fig/' + project + '_ic-distribution_additional.tiff'), dpi=300)
