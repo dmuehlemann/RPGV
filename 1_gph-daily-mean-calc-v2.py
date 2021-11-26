@@ -2,7 +2,12 @@
 """
 Created on Sam Aug  7 11:50:05 2020
 
-@author: Dirk
+@author: Dirk Mühlemann
+
+This script calculates daily means of the 
+seasonal ERA5 500 hPa gepotential height data 
+
+
 """
 
 
@@ -16,12 +21,6 @@ file2 = data_folder / 'gph-mam-all.nc'
 file3 = data_folder / 'gph-jja-all.nc'
 file4 = data_folder / 'gph-son-all.nc'
 files = [file1, file2, file3, file4]
-
-
-# data = xr.open_mfdataset(files)
-# data = data.sortby('time', ascending=True)
-# data = data.resample(time='1D').mean()
-# data.to_netcdf('../data/gph-daily-mean-v2.nc')
 
 gph_djf_all = xr.open_dataset(file1)
 gph_djf_daily_mean = gph_djf_all.resample(time='1D').mean().dropna(dim='time')

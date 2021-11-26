@@ -95,7 +95,7 @@ c = wr.wr.max().values+1
 #Create subplots and colorbar for wr
 cmap = mpl.cm.get_cmap("RdGy_r")
 cmap_wr = mpl.cm.get_cmap("RdYlBu_r")
-csfont = {'fontname':'Times New Roman'}
+# csfont = {'fontname':'Times New Roman'}
 plt.close("all")
 f, ax = plt.subplots(
     ncols=c,
@@ -134,11 +134,11 @@ for i in range(0,wr.wr.max().values+1):
         if i==wr.wr.max().values:
             title= 'no regime ' +  str(np.round(frequency * 100, decimals=1)) + "%"
         else:
-            title= 'WR' + str(i) + ' ' +  str(np.round(frequency * 100, decimals=1)) + "%"
+            title= 'WR' + str(i+1) + ' ' +  str(np.round(frequency * 100, decimals=1)) + "%"
         ax[0, i].coastlines()
         ax[0, i].set_global()
         mean_wr_std_ano.plot.imshow(ax=ax[0,i], cmap=cmap_wr, transform=ccrs.PlateCarree(), add_colorbar=False)
-        ax[0, i].set_title(title, fontsize=11, **csfont)
+        ax[0, i].set_title(title, fontsize=11,)
         
         
         #Plot CF
@@ -173,13 +173,13 @@ for i in range(0,wr.wr.max().values+1):
         #standard anomalie height plot
         # vmax_std_ano = mean_wr_std_ano.max()
         # vmin_std_ano = mean_wr_std_ano.min()
-        title= 'WR' + str(i) + ' ' +  str(np.round(frequency * 100, decimals=1)) + "%"
+        title= 'WR' + str(i+1) + ' ' +  str(np.round(frequency * 100, decimals=1)) + "%"
         ax[0, i].coastlines()
         ax[0, i].set_global()
         con = mean_wr_std_ano.plot.imshow(ax=ax[0,i],  cmap=cmap_wr, transform=ccrs.PlateCarree(), add_colorbar=False) 
         cb = plt.colorbar(con, cax=cbar_ax, orientation='horizontal',)
-        cb.ax.set_title(label='Standardized anomalies of geoptential height at 500hPa [unitless]',size=11,fontfamily='times new roman')
-        ax[0, i].set_title(title, fontsize=11, **csfont) 
+        cb.ax.set_title(label='Standardized anomalies of geoptential height at 500hPa [unitless]',size=9,)
+        ax[0, i].set_title(title, fontsize=11,) 
         
         
         
@@ -230,7 +230,7 @@ f.subplots_adjust(wspace=0.05, hspace=-0.2)
 # Move CF legend to rigt place
 leg = ax[1,i].get_figure().get_axes()[13]
 leg.set_position([0.3,0.12,0.4,0.02])
-leg.set_xlabel("Capacity factor anomaly [unitless]", fontsize=11, **csfont)
+leg.set_xlabel("Capacity factor anomaly [unitless]", fontsize=9,)
 #move subplot
 pos1 = ax[4,0].get_position()
 pos2 = [ax[3,0].get_position().x0, ax[4,1].get_position().y0, ax[4,1].get_position().width, ax[4,1].get_position().height]
@@ -248,27 +248,27 @@ ax[4,0].set_position(pos2)
 
 rect = plt.Rectangle((-14,31),50*8, 45,
                      clip_on=False,
-                     facecolor='w',alpha=0.2, label='Winter')
+                     facecolor='w',alpha=0.08, label='Winter')
 ax[1,0].add_patch(rect)
 ax[1,0].text(-21, 42, 'Winter', fontsize=11, rotation='vertical')
 
 rect = plt.Rectangle((-14,31),50*8, 45,
                      clip_on=False,
-                     facecolor='g',alpha=0.2, label='Spring')
+                     facecolor='g',alpha=0.08, label='Spring')
 ax[2,0].add_patch(rect)
 ax[2,0].text(-21, 42, 'Spring', fontsize=11, rotation='vertical')
 
 
 rect = plt.Rectangle((-14,31),50*8, 45,
                      clip_on=False,
-                     facecolor='r',alpha=0.2, label='Summer')
+                     facecolor='r',alpha=0.08, label='Summer')
 ax[3,0].add_patch(rect)
 ax[3,0].text(-21, 42, 'Summer', fontsize=11, rotation='vertical')
 
 
 rect = plt.Rectangle((-14,31),50*8, 45,
                      clip_on=False,
-                     facecolor='b',alpha=0.2, label='Autumn')
+                     facecolor='b',alpha=0.08, label='Autumn')
 ax[4,0].add_patch(rect)
 ax[4,0].text(-21, 42, 'Autumn', fontsize=11, rotation='vertical')
 
