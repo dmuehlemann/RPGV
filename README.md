@@ -22,7 +22,7 @@ filename = data_folder / 'ninja/ninja_europe_pv_v1.1/ninja_pv_europe_v1.1_merra2
 ```
 
 ### Installed PV capacities
-To compute actual national PV power generation from current capacity factors, we use installed capacities from the [International Renewable Energy Agency](https://irena.org/publications/2020/Mar/Renewable-Capacity-Statistics-2020). Since these numbers are listed in a PDF we provide the used/created csv file in the folder sources with the name ['installed_capacities_IRENA.csv'](https://github.com/dmuehlemann/RPGV/blob/master/sources/installed_capacities_IRENA.csv).
+To compute actual national PV power generation from current capacity factors, we use installed capacities from the [International Renewable Energy Agency](https://irena.org/publications/2020/Mar/Renewable-Capacity-Statistics-2020). Since these numbers are listed in a PDF we provide the created/used csv file in the folder 'sources' with the name ['installed_capacities_IRENA.csv'](https://github.com/dmuehlemann/RPGV/blob/master/sources/installed_capacities_IRENA.csv).
 The dataset is used in the scripts '10_2030-all-scenarios.py' and '11_2050-all-scenarios.py':
 ```
 ic_file = data_folder / 'source/installed_capacities_IRENA.csv'
