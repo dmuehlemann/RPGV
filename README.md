@@ -39,10 +39,10 @@ The datasets are used in the scripts '10_2030-all-scenarios.py' and '11_2050-all
 ### Installed capacity potential
 The upper bound which is used in the linear least-square problems is always set to the roof-top mounted PV potential per country. The data for the roof-top mounted PV potential is taken by [Tröndle et al. (2019)](https://doi.org/10.1016/j.esr.2019.100388).
 The dataset is used in the scripts '10_2030-all-scenarios.py' and '11_2050-all-scenarios.py':
-'''
+```
 with open(data_folder / 'source/IC-potential.yaml') as file:
     ic_pot_file = yaml.safe_load(file)
-'''
+````
 
 ## Figure overview
 
