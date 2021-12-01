@@ -15,7 +15,7 @@ We use [ERA5 hourly data on pressure levels](https://cds.climate.copernicus.eu/c
 
 ### Renewables.ninja
 Country-level PV power generation is taken from [Renewables.ninja](https://www.renewables.ninja/downloads). The explicit used dataset can be found [here](https://www.renewables.ninja/static/downloads/ninja_europe_pv_v1.1.zip). We use European country-specific capacity factors based on the reanalyse dataset MERRA-2 covering 1985-2016.
-The dataset is first used in the script '7_wr-ninja-combi.py' the following
+The dataset is first used in the script '7_wr-ninja-combi.py' the following:
 filename = data_folder / 'ninja/ninja_europe_pv_v1.1/ninja_pv_europe_v1.1_merra2.csv'
 
 ### Installed PV capacities
@@ -28,8 +28,11 @@ To assess future configurations, we use the [National Energy and Climate Plans (
 
 
 ### Electricity consumption data
-https://data.open-power-system-data.org/time_series/2020-10-06
-Load load/consumption from Eurostat dataset for missing countires
+We use hourly electricity consumption data from  [Open Power System Data](https://doi.org/10.25832/time_series/2020-10-06) and fill gaps with data from the [statistical office of the European Union](https://ec.europa.eu/eurostat/databrowser/view/nrg_cb_e/default/table?lang=en). Since data availability differs per country, we take the latest fully reported year as the current total electricity consumption (range between 2016 and 2019). 
+
+### Installed capacity potential
+The upper bound which is used in the linear least-square problems is always set to the roof-top mounted PV potential per country. The data for the roof-top mounted PV potential is taken by [Tröndle et al. (2019)](https://doi.org/10.1016/j.esr.2019.100388)
+
 
 
 ## Figure overview
