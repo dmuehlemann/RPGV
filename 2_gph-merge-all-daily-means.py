@@ -18,10 +18,10 @@ import xarray as xr
 ##############MERGE DAILY MEANS#########################
 
 data_folder = Path("../data/")
-file1 = data_folder / 'gph-djf-daily-mean-v2.nc'
-file2 = data_folder / 'gph-mam-daily-mean-v2.nc'
-file3 = data_folder / 'gph-jja-daily-mean-v2.nc'
-file4 = data_folder / 'gph-son-daily-mean-v2.nc'
+file1 = data_folder / 'gph-djf-daily-mean.nc'
+file2 = data_folder / 'gph-mam-daily-mean.nc'
+file3 = data_folder / 'gph-jja-daily-mean.nc'
+file4 = data_folder / 'gph-son-daily-mean.nc'
 
 f_out = data_folder / 'gph-daily-mean.nc'
 
