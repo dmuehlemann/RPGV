@@ -14,7 +14,7 @@ We use [ERA5 hourly data on pressure levels](https://cds.climate.copernicus.eu/c
 
 
 ### Renewables.ninja
-Country-level PV power generation is taken from [renewables.ninja](https://www.renewables.ninja/downloads). The explicit used dataset can be found [here](https://www.renewables.ninja/static/downloads/ninja_europe_pv_v1.1.zip). We use European country-specific capacity factors provided by Renewables.ninja based on the reanalyse  dataset MERRA-2 covering 1985-2016.
+Country-level PV power generation is taken from [Renewables.ninja](https://www.renewables.ninja/downloads). The explicit used dataset can be found [here](https://www.renewables.ninja/static/downloads/ninja_europe_pv_v1.1.zip). We use European country-specific capacity factors based on the reanalyse dataset MERRA-2 covering 1985-2016.
 The dataset is first used in the script '7_wr-ninja-combi.py' the following
 filename = data_folder / 'ninja/ninja_europe_pv_v1.1/ninja_pv_europe_v1.1_merra2.csv'
 
