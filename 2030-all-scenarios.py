@@ -541,13 +541,21 @@ for i in ic_plotting:
     ma = i.dropna().plot(ax=ax.reshape(-1)[n], column=i.columns[3], cmap=cmap, edgecolor='black', linewidth=0.1,
                               vmax=vmax, vmin=vmin,
                               )
+    #Add hatching for county which reaches the upper bound
+    for column in df_ic_ub:
+        if column == i.columns[3]:
+            for cc in (df_ic_ub[column].where(df_ic_ub[column]>-1)).dropna().index:
+                plt.rcParams['hatch.linewidth'] = 0.5
+                i.where(i.country_code==cc).plot(ax=ax.reshape(-1)[n],column=i.columns[3], cmap=cmap, edgecolor='black',linewidth=0.1,
+                              vmax=vmax, vmin=vmin,hatch='/////')
+                
     #Adjust map    
     ax.reshape(-1)[n].set_xlim(left=-13, right=35)
     ax.reshape(-1)[n].set_ylim(bottom=34, top=70) 
     ax.reshape(-1)[n].set_title(labels[n] + " " + i.columns[3],pad=-10, loc='left', fontsize=9)
     
     #Add table with IC and variability    
-    col = ('Capacity', 'Mean output', 'Mean var', 'Max var')
+    col = ('Total capacity', 'Mean output', 'Mean var', 'Max var')
     cell_text = [[str((tot_IC[n+1]/1000).round(1)) + ' GW', 
                   str(((tot_P[n+1]).values/1000).round(1)) + ' GW',
                   str((tot_var[n]/1000).round(1)) + ' GW', 
@@ -578,7 +586,7 @@ sm = plt.cm.ScalarMappable(cmap=cmap, norm=plt.Normalize(vmin=vmin, vmax=vmax))
 #Fake up the array of the scalar mappable. Urgh...
 sm._A = []
 cbar = f.colorbar(sm, cax=cax, orientation='horizontal')
-cbar.set_label('Additional installed PV capacity (in GW)', fontsize=9)
+cbar.set_label('Total installed PV capacity (in GW)', fontsize=9)
 f.savefig(data_folder / str('fig/' + project + '_ic-distribution_absolut.tiff'), dpi=300)
 
 
@@ -602,13 +610,21 @@ for i in ic_lb_plotting:
     ma = i.dropna().plot(ax=ax.reshape(-1)[n], column=i.columns[3], cmap=cmap, edgecolor='black', linewidth=0.1,
                               vmax=vmax, vmin=vmin,
                               )
+    #Add hatching for county which reaches the upper bound
+    for column in df_ic_ub:
+        if column == i.columns[3]:
+            for cc in (df_ic_ub[column].where(df_ic_ub[column]>-1)).dropna().index:
+                plt.rcParams['hatch.linewidth'] = 0.5
+                i.where(i.country_code==cc).plot(ax=ax.reshape(-1)[n],column=i.columns[3], cmap=cmap, edgecolor='black',linewidth=0.1,
+                              vmax=vmax, vmin=vmin,hatch='/////')
+                
     #Adjust map    
     ax.reshape(-1)[n].set_xlim(left=-13, right=35)
     ax.reshape(-1)[n].set_ylim(bottom=34, top=70) 
     ax.reshape(-1)[n].set_title(labels[n] + " " + i.columns[3],pad=-10, loc='left', fontsize=9)
     
     #Add table with IC and variability    
-    col = ('Capacity', 'Mean output', 'Mean var', 'Max var')
+    col = ('Total capacity', 'Mean output', 'Mean var', 'Max var')
     cell_text = [[str((tot_IC[n+1]/1000).round(1)) + ' GW', 
                   str(((tot_P[n+1]).values/1000).round(1)) + ' GW',
                   str((tot_var[n]/1000).round(1)) + ' GW', 
