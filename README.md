@@ -3,7 +3,7 @@ How to Distribute New Solar Systems in Europe to Reduce Power Generation Variabi
 
 ## Input Data
 
-Different source data are needed to run the scripts and recreate the results and plots. Here you can find an overview of these data with a short description of what was used within this work and where you can download them.
+Different source data are needed to run the scripts and recreate the results and plots. Here you can find an overview of these data with a short description of what was used within this work and where you can download it.
 
 ### ERA5
 We use [ERA5 hourly data on pressure levels](https://cds.climate.copernicus.eu/cdsapp#!/dataset/reanalysis-era5-pressure-levels?tab=form) from Januray 1979 to June 2020. The geographical area is 80°W to 40°E, 30°N to 90°N. The data are downloaded per season and are defined in the first scripts '1_gph-daily-mean-calc.py' the following:
@@ -18,7 +18,8 @@ Country-level PV power generation is taken from [Renewables.ninja](https://www.r
 The dataset is first used in the script '7_wr-ninja-combi.py' the following
 filename = data_folder / 'ninja/ninja_europe_pv_v1.1/ninja_pv_europe_v1.1_merra2.csv'
 
-
+### Installed PV capacities
+To compute actual national PV power generation from current capacity factors, we use installed capacities from the [International Renewable Energy Agency](https://irena.org/publications/2020/Mar/Renewable-Capacity-Statistics-2020)
 
 
 
