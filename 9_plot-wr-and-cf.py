@@ -34,14 +34,13 @@ file_ninja = data_folder / 'ninja_and_wr_30days_lowpass_2_0-1_short3.nc'
 ninja = xr.open_dataset(file_ninja)
 
 
-
-###here no Brexit ;-)
+#Rename GB to UK and GR to EL for consistency between datasets
 ninja = ninja.rename_vars({'GB':'UK'})
 ninja = ninja.rename_vars({'GR':'EL'})
 
-#####CF calculations##########
 
 
+######################CF calculations##########
 ninja_tot = []
 ninja_season= []
 
@@ -55,8 +54,6 @@ for i in range(0, int(wr.wr.max())+1):
 
 
 ######################Plot results#################
-
-
 #Map infos for relative capacity factors per country
 #Read shapefile using Geopandas
 shapefile = data_folder / 'map/CNTR_RG_01M_2020_4326/CNTR_RG_01M_2020_4326.shp'
@@ -64,16 +61,15 @@ eu = gpd.read_file(shapefile)[['CNTR_NAME', 'CNTR_ID', 'geometry']]
 #Rename columns
 eu.columns = ['country', 'country_code', 'geometry']
 
-
+#create array to plot all WR
 cf_plotting = []
-
 for i in range(0, int(wr.wr.max())+1):
     cf_plotting.append(eu.merge(ninja_season[i].to_dataframe().transpose(), left_on = 'country_code', right_index=True))
     temp = eu.merge(ninja_tot[i].to_dataframe().transpose(), left_on = 'country_code', right_index=True)
     cf_plotting[i] = cf_plotting[i].assign(tot=temp[0])
 
 
-
+#Define seasons
 season = {0: 'DJF', 1: 'MAM', 2: 'JJA', 3: 'SON'}
 
 
@@ -108,7 +104,7 @@ for i in range(0,wr.wr.max().values+1):
  
     if i != 0:
 
-        #standard anomalie height plot
+        #Standard anomalie height plot
         if i==wr.wr.max().values:
             title= 'no regime ' +  str(np.round(frequency * 100, decimals=1)) + "%"
         else:
@@ -129,17 +125,14 @@ for i in range(0,wr.wr.max().values+1):
                                       )
             ax[s,i].set_axis_off()
       
-            #adjust EU plot --> exclude "far away" regions :-)
+            #Adjust EU plot --> exclude "far away" regions
             ax[s,i].set_xlim(left=-12, right=35)
             ax[s,i].set_ylim(bottom=32, top=72) 
             s=s+1
-            
-     
-        
-        
+       
     else:
   
-        #standard anomalie height plot
+        #Standard anomalie height plot
         title= 'WR' + str(i+1) + ' ' +  str(np.round(frequency * 100, decimals=1)) + "%"
         ax[0, i].coastlines()
         ax[0, i].set_global()
@@ -148,15 +141,15 @@ for i in range(0,wr.wr.max().values+1):
         cb.ax.set_title(label='Standardized anomalies of geoptential height at 500hPa [unitless]',size=9,)
         ax[0, i].set_title(title, fontsize=11,) 
         
-        
-        
         #Plot CF
         s = 1
         for a in season.values():
             if a=='SON':
-    
-                ax[s, i] = plt.subplot(r, c, c * s + i + 1)  # override the GeoAxes object
-                plt.subplots_adjust(wspace=0.05, hspace=0.001)   
+                # Override the GeoAxes object
+                ax[s, i] = plt.subplot(r, c, c * s + i + 1)  
+                #Remove space between plots
+                plt.subplots_adjust(wspace=0.05, hspace=0.001) 
+                #Plot
                 cf_plotting[i].dropna().plot(ax = ax[s,i], column=a, cmap=cmap, edgecolor='black', linewidth=0.05,
                                           vmax=vmax_cf, vmin=vmin_cf,
                                           legend=True, 
@@ -164,31 +157,33 @@ for i in range(0,wr.wr.max().values+1):
                                           'orientation': "horizontal",}
                                                                           
                                           )
-                #add title to the map
-                # ax[s,i].set_title('CF during WR'+str(i) +' ' + str(a), fontsize=16, **csfont)
-                #remove axes
+                #Remove axes
                 ax[s,i].set_axis_off()
           
-                #adjust EU plot --> exclude "far away" regions :-)
+                #Adjust EU plot --> exclude "far away" regions :-)
                 ax[s,i].set_xlim(left=-12, right=35)
                 ax[s,i].set_ylim(bottom=32, top=72) 
                 s = s +1
            
             else:
-                ax[s, i] = plt.subplot(r, c, c * s + i + 1)  # override the GeoAxes object
-                plt.subplots_adjust(wspace=0.05, hspace=0.001)   
+                #Override the GeoAxes object
+                ax[s, i] = plt.subplot(r, c, c * s + i + 1)  
+                #Remove space between plots
+                plt.subplots_adjust(wspace=0.05, hspace=0.001)  
+                #Plot
                 cf_plotting[i].dropna().plot(ax = ax[s,i], column=a, cmap=cmap, edgecolor='black', linewidth=0.1,
                                           vmax=vmax_cf, vmin=vmin_cf,
                                           legend=False, 
                                           )
-                #remove axes
+                #Remove axes
                 ax[s,i].set_axis_off()
           
-                #adjust EU plot --> exclude "far away" regions :-)
+                #Adjust EU plot --> exclude "far away" regions :-)
                 ax[s,i].set_xlim(left=-12, right=35)
                 ax[s,i].set_ylim(bottom=32, top=72) 
                 s=s+1
 
+#Remove space between plots
 f.subplots_adjust(wspace=0.05, hspace=-0.2)               
         
      
