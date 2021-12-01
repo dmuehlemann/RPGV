@@ -19,4 +19,8 @@ Supplementary material Figure 3 | 2050_ic-distribution_absolut.tiff | 11_2050-al
 Supplementary material Figure 4 | 2050_variability.tiff | 11_2050-all-scenarios.py
 
 
-## Data
+## Input Data
+
+Different source data are needed to run the scripts and recreate the results and plots. Here you can find an overview of these data with a short description of what was used within this work and where you can download them.
+
+### ERA5
