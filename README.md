@@ -23,6 +23,12 @@ To compute actual national PV power generation from current capacity factors, we
 
 
 
+
+OPSD
+https://data.open-power-system-data.org/time_series/2020-10-06
+Load load/consumption from Eurostat dataset for missing countires
+
+
 ## Figure overview
 
 | Figure | Filename | Creating python script |
