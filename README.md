@@ -19,7 +19,9 @@ The dataset is first used in the script '7_wr-ninja-combi.py' the following
 filename = data_folder / 'ninja/ninja_europe_pv_v1.1/ninja_pv_europe_v1.1_merra2.csv'
 
 ### Installed PV capacities
-To compute actual national PV power generation from current capacity factors, we use installed capacities from the [International Renewable Energy Agency](https://irena.org/publications/2020/Mar/Renewable-Capacity-Statistics-2020)
+To compute actual national PV power generation from current capacity factors, we use installed capacities from the [International Renewable Energy Agency](https://irena.org/publications/2020/Mar/Renewable-Capacity-Statistics-2020). Since these numbers are listed in a PDF we provide the used/created csv file in the folder sources with the name ['installed_capacities_IRENA.csv'](https://github.com/dmuehlemann/RPGV/blob/master/sources/installed_capacities_IRENA.csv).
+
+
 
 
 
