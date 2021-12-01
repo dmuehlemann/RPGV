@@ -25,7 +25,7 @@ Different source data are needed to run the scripts and recreate the results and
 
 ### ERA5
 We use [ERA5 hourly data on pressure levels](https://cds.climate.copernicus.eu/cdsapp#!/dataset/reanalysis-era5-pressure-levels?tab=form) from Januray 1979 to June 2020. The geographical area is 80°W to 40°E, 30°N to 90°N. The data are downloaded per season and are defined in the first scripts '1_gph-daily-mean-calc.py' the following:
-file1 = data_folder / 'gph-djf-all.nc'
-file2 = data_folder / 'gph-mam-all.nc'
-file3 = data_folder / 'gph-jja-all.nc'
-file4 = data_folder / 'gph-son-all.nc'
+- file1 = data_folder / 'gph-djf-all.nc'
+- file2 = data_folder / 'gph-mam-all.nc'
+- file3 = data_folder / 'gph-jja-all.nc'
+- file4 = data_folder / 'gph-son-all.nc'
