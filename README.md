@@ -22,11 +22,12 @@ filename = data_folder / 'ninja/ninja_europe_pv_v1.1/ninja_pv_europe_v1.1_merra2
 To compute actual national PV power generation from current capacity factors, we use installed capacities from the [International Renewable Energy Agency](https://irena.org/publications/2020/Mar/Renewable-Capacity-Statistics-2020). Since these numbers are listed in a PDF we provide the used/created csv file in the folder sources with the name ['installed_capacities_IRENA.csv'](https://github.com/dmuehlemann/RPGV/blob/master/sources/installed_capacities_IRENA.csv).
 
 
+### NECPs
+To assess future configurations, we use the [National Energy and Climate Plans (NECPs)](https://ec.europa.eu/energy/topics/energy-strategy/national-energy-climate-plans_en) in which countries define capacity targets until 2030. The actual source to get the planed installed capacities are taken from [SolarPower Europe](https://www.solarpowereurope.org/solar-map-of-eu-countries/) where the NECPs are nicely summarized in an interactive map. When NECPs are not available we consider individual national plans or, as a last resort, apply the average PV installed capacity growth rate until the year 2030 from all EU countries to the currently installed PV capacities. The used dataset can be found in the folder sources with the name ['planned-IC-2030.xlsx'](https://github.com/dmuehlemann/RPGV/blob/master/sources/planned-IC-2030.xlsx).
 
 
 
-
-OPSD
+### Electricity consumption data
 https://data.open-power-system-data.org/time_series/2020-10-06
 Load load/consumption from Eurostat dataset for missing countires
 
