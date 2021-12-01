@@ -24,3 +24,8 @@ Supplementary material Figure 4 | 2050_variability.tiff | 11_2050-all-scenarios.
 Different source data are needed to run the scripts and recreate the results and plots. Here you can find an overview of these data with a short description of what was used within this work and where you can download them.
 
 ### ERA5
+We use ERA5 hourly data on pressure levels from Januray 1979 to June 2020. [here](https://www.google.com) The geographical area is 80°W to 40°E, 30°N to 90°N. The data are downloaded per season and are defined in the first scripts '1_gph-daily-mean-calc.py' the following:
+file1 = data_folder / 'gph-djf-all.nc'
+file2 = data_folder / 'gph-mam-all.nc'
+file3 = data_folder / 'gph-jja-all.nc'
+file4 = data_folder / 'gph-son-all.nc'
