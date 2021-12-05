@@ -385,6 +385,11 @@ tot_P.append((mean_season.mean().to_array() * res_prod.x).sum())
 tot_P.append((mean_season.mean().to_array() * res_cost.x).sum())
 tot_P.append((mean_season.mean().to_array() * res_autarky.x).sum())
 
+
+
+#Seasonal production
+P_season = (mean_season * ic_reduced).to_array().sum(axis=0)
+
 #Total installed capacity
 tot_IC = []
 tot_IC.append(ic_reduced.to_array().values.sum())
