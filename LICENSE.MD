@@ -1,1 +1,1 @@
-This project is licensed under the terms of the MIT license. 
+This project is licensed under the terms of the MIT license. Exceptions are the two provided datasets in the source folder with data from the [International Renewable Energy Agency](https://irena.org/publications/2020/Mar/Renewable-Capacity-Statistics-2020) and [Tröndle et al. (2019)](https://doi.org/10.1016/j.esr.2019.100388) that follow their own licenses.
