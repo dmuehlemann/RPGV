@@ -55,7 +55,7 @@ with open(data_folder / 'source/IC-potential.yaml') as file:
 
 | Figure | Filename | Creating python script |
 |---|---|---|
-Figure 1 | approach-overview.jpg | -
+Figure 1 | approach-overview.jpg | generated externally
 Figure 2 | wr_and_cf.tiff | 9_plot-wr-and-cf.py
 Figure 3 | 2030_ic-distribution_additional.tiff | 10_2030-all-scenarios.py
 Figure 4 | 2030_tot_variability.tiff | 10_2030-all-scenarios.py
