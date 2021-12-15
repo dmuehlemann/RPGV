@@ -67,7 +67,7 @@ Supplementary material Figure 3 | 2050_ic-distribution_absolut.tiff | 11_2050-al
 Supplementary material Figure 4 | 2050_variability.tiff | 11_2050-all-scenarios.py
 
 ## License
-MIT License - See LICENSE for more detail  
+MIT License - See LICENSE for more detail.  
 This excludes all contents from [International Renewable Energy Agency](https://irena.org/publications/2020/Mar/Renewable-Capacity-Statistics-2020) and 
 [Tröndle et al. (2019)](https://doi.org/10.1016/j.esr.2019.100388) provided in the source folder which remains the property of the respective copyright holders.
 
