@@ -269,11 +269,11 @@ state_autarky = (A_all * res_autarky.x).sum(axis=1)
 data_var = np.c_[state_2050, state_prod, state_cost, state_autarky]
 df_var = pd.DataFrame((data_var), columns=[var_2050, var_prod, var_cost, var_autarky])
 for i in range(0,8):
-    df_var = df_var.rename({i: 'WR'+str(i)}, axis='index')
-    df_var = df_var.rename({i+8:'WR'+str(i)}, axis='index')
-    df_var = df_var.rename({i+16:'WR'+str(i)}, axis='index')
-    df_var = df_var.rename({i+24:'WR'+str(i)}, axis='index')
-df_var = df_var.rename({'WR7':'no regime'})
+    df_var = df_var.rename({i: 'WR'+str(i+1)}, axis='index')
+    df_var = df_var.rename({i+8:'WR'+str(i+1)}, axis='index')
+    df_var = df_var.rename({i+16:'WR'+str(i+1)}, axis='index')
+    df_var = df_var.rename({i+24:'WR'+str(i+1)}, axis='index')
+df_var = df_var.rename({'WR8':'no regime'})
 
 
 
@@ -474,10 +474,10 @@ fig_tot_var.savefig(data_folder / str('fig/' + project +'_tot_variability.tiff')
 
 
 #######Plot deviation per weather regime and season#######
-ax_var = (df_var/1000).plot(kind='bar', figsize=(8.27,4.2), fontsize=7, color=my_colors)
+ax_var = (df_var/1000).plot(kind='bar', figsize=(8.27,4.3), fontsize=7, color=my_colors)
 ax_var.legend(loc=2, fontsize=7)
-ax_var.set_ylabel('Deviation of PV power production from the seasonal mean in GW', fontsize=7)
-ax_var.set_xlabel('Weather regimes', fontsize=7, labelpad=10)
+ax_var.set_ylabel('Deviation of PV power generation from the seasonal mean [GW]', fontsize=7)
+# ax_var.set_xlabel('Weather regimes', fontsize=7, labelpad=10)
 ax_var.axvspan(0,7.5, facecolor='w', alpha=0.08, label='Winter')
 ax_var.text(2.5, ax_var.yaxis.get_data_interval().min(), 'Winter', fontsize=7)
 ax_var.axvspan(7.5,15.5, facecolor='g', alpha=0.08, label='Spring')
@@ -487,6 +487,7 @@ ax_var.text(18.5, ax_var.yaxis.get_data_interval().min(), 'Summer', fontsize=7)
 ax_var.axvspan(23.5,32, facecolor='b', alpha=0.08, label='Autumn')
 ax_var.text(26.5, ax_var.yaxis.get_data_interval().min(), 'Autumn', fontsize=7)
 fig = ax_var.get_figure()
+fig.subplots_adjust(bottom=0.18)
 fig.savefig(data_folder / str('fig/' + project +'_variability.tiff'), dpi=300)
 #######END Plot deviation per weather regime and season#######
 
