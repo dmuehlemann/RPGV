@@ -1,5 +1,5 @@
 # RPGV
-How to Distribute New Solar Systems in Europe to Reduce Power Generation Variability (RPGV)
+How to Distribute New Solar Systems in Europe to Reduce multi-day Power Generation Variability (RPGV)
 
 ## Input Data
 
