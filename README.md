@@ -3,7 +3,7 @@ How to Distribute New Solar Systems in Europe to Reduce multi-day Power Generati
 
 Code underlying analysis performed in
 
-Mühlemann, D., Folini, D., Pfenninger, S., Wild, M., Wohland, J., 2021. Meteorologically-informed spatial planning of European PV deployment to reduce multi-day generation variability (link to DOI when paper is published)
+Mühlemann, D., Folini, D., Pfenninger, S., Wild, M., Wohland, J., 2021. Meteorologically-Informed Spatial Planning of European PV Deployment to Reduce Multiday Generation Variability (link to DOI when paper is published)
 
 If you content of this repository or code derived from it in academic work, please cite the above publication.
 
